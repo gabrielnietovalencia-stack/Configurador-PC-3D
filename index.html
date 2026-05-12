@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador PC 3D</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #111; }
+        #menu { position: absolute; top: 20px; left: 20px; color: white; font-family: sans-serif; z-index: 10; }
+    </style>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+          }
+        }
+    </script>
+</head>
+<body>
+    <div id="menu">
+        <h1>PC Builder 3D</h1>
+        <p>Piezas seleccionadas: <span id="contador">0</span>/30</p>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
