@@ -56,3 +56,5 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+// Añadimos la gráfica (ajustando la escala inicial a 0.01 por si acaso)
+cargarPieza('gpu_4090.glb', 0, 0.3, 0.1, 0.01);
