@@ -3,12 +3,12 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ========================================================
-// 1. GESTOR DE CARGA Y BOTÓN DE PÁNICO (3 SEGUNDOS)
+// GESTOR DE CARGA Y BOTÓN DE PÁNICO (3 SEGUNDOS)
 // ========================================================
 setTimeout(() => {
     const pantalla = document.getElementById('pantalla-carga');
     if (pantalla && pantalla.style.display !== 'none') {
-        console.warn("Tiempo límite alcanzado. Forzando apertura de la web...");
+        console.warn("Tiempo límite. Forzando apertura...");
         pantalla.style.opacity = '0';
         setTimeout(() => { pantalla.style.display = 'none'; }, 500);
     }
@@ -25,19 +25,20 @@ loadingManager.onLoad = function () {
 };
 
 loadingManager.onError = function (url) {
-    console.error('Error cargando el archivo: ' + url);
+    console.error('Error cargando: ' + url);
     const pantalla = document.getElementById('pantalla-carga');
     if (pantalla) { pantalla.style.display = 'none'; }
 };
 
 // ========================================================
-// 2. CONFIGURACIÓN DE LA ESCENA ESCENARIO 3D
+// CONFIGURACIÓN DE LA ESCENA
 // ========================================================
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111116);
 
+// Cámara ajustada hacia atrás para ver bien la caja desde el principio
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 3, 18);
+camera.position.set(0, 3, 18); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -53,15 +54,15 @@ const light = new THREE.DirectionalLight(0xffffff, 1.5);
 light.position.set(5, 8, 5);
 scene.add(light);
 
-// NUEVO: CUADRÍCULA HOLOGRÁFICA EN EL SUELO
+// Cuadrícula Holográfica
 const gridHelper = new THREE.GridHelper(10, 20, 0x00ffff, 0x333333);
-gridHelper.position.y = -0.5; // Ajustada un pelo abajo como suelo
+gridHelper.position.y = -0.5;
 scene.add(gridHelper);
 
 const loader = new GLTFLoader(loadingManager);
 
 // ========================================================
-// 3. LOGICA DE COMPONENTES Y CALCULADORA DE PRECIOS
+// LOGICA DE COMPONENTES Y PRECIOS
 // ========================================================
 let piezasActivas = { caja: null, placa: null, grafica: null };
 let preciosActivos = { caja: 0, placa: 0, grafica: 0 };
@@ -83,23 +84,19 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         
-     // --- SECCIÓN DE CALIBRACIÓN MANUAL ---
+        // --- SECCIÓN DE CALIBRACIÓN DE TAMAÑOS ---
         if (tipo === 'caja') {
-            // Le devolvemos un tamaño decente para que se vea
             model.position.set(0, -0.5, 0); 
-            model.scale.set(1, 1, 1); 
-
+            model.scale.set(0.8, 0.8, 0.8); 
         } else if (tipo === 'placa') {
-            // Era un puntito microscópico, ¡vamos a multiplicarla por 20!
             model.position.set(0, 0.5, -0.5);
-            model.scale.set(1, 5, 1); 
-
+            model.scale.set(3, 3, 3); 
         } else if (tipo === 'grafica') {
-            // Es un monstruo gigante, ¡vamos a encogerla muchísimo más! (Fíjate en los ceros)
             model.position.set(0, 0.5, 0);
-            model.scale.set(1, 1.5, 1); 
+            model.scale.set(0.0015, 0.0015, 0.0015); 
         }
-        // -----------------------------------------------------------------
+        // ------------------------------------------
+
         scene.add(model);
         piezasActivas[tipo] = model;
 
@@ -111,13 +108,33 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     }, undefined, (error) => console.error(error));
 };
 
-// Carga de componentes iniciales por defecto con sus precios
+// ========================================================
+// FUNCIÓN PARA VACIAR EL PC
+// ========================================================
+window.reiniciarPC = function() {
+    ['caja', 'placa', 'grafica'].forEach(tipo => {
+        if (piezasActivas[tipo]) {
+            scene.remove(piezasActivas[tipo]);
+            piezasActivas[tipo] = null;
+        }
+        preciosActivos[tipo] = 0;
+        const elTexto = document.getElementById(`txt-${tipo}`);
+        if (elTexto) {
+            elTexto.innerHTML = `<span style="color: #555;"><strong>${tipo.toUpperCase()}:</strong> -</span>`;
+        }
+    });
+    actualizarPrecioTotal();
+};
+
+// ========================================================
+// CARGA INICIAL POR DEFECTO
+// ========================================================
 cambiarComponente('caja', 'case_corsair.glb', 'Corsair iCUE', 150);
 cambiarComponente('placa', 'mobo_pro.glb', 'ASUS Pro WS', 350);
 cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 40 ROG', 2000);
 
 // ========================================================
-// 4. BUCLE DE RENDERIZADO ANIMACIÓN
+// BUCLE DE ANIMACIÓN
 // ========================================================
 function animate() {
     requestAnimationFrame(animate);
