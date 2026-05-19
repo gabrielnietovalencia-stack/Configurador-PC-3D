@@ -4,8 +4,46 @@
     <meta charset="UTF-8">
     <title>Configurador PC 3D</title>
     <style>
-        body { margin: 0; overflow: hidden; background-color: #111; }
+        body { margin: 0; overflow: hidden; background-color: #111; font-family: sans-serif; }
         canvas { display: block; }
+        
+        /* Contenedor del menú flotante */
+        #menu {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(20, 20, 20, 0.85);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            width: 220px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            z-index: 10;
+        }
+        h3 { margin-top: 0; color: #00ffff; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .seccion { margin-bottom: 15px; }
+        .titulo-sec { font-size: 12px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; }
+        
+        /* Estilo de los botones */
+        button {
+            display: block;
+            width: 100%;
+            background: #252525;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #00ffff;
+            color: #000;
+            font-weight: bold;
+        }
     </style>
     <script type="importmap">
         {
@@ -17,6 +55,31 @@
     </script>
 </head>
 <body>
+
+    <div id="menu">
+        <h3>Configurador PC</h3>
+        
+        <div class="seccion">
+            <div class="titulo-sec">Chasis (Cajas)</div>
+            <button onclick="cambiarComponente('caja', 'case_corsair.glb', 0, 0, 0, 1)">Corsair Case</button>
+            <button onclick="cambiarComponente('caja', 'case_fractal.glb', 0, 0, 0, 1)">Fractal Case</button>
+            <button onclick="cambiarComponente('caja', 'case_nzxt.glb', 0, 0, 0, 1)">NZXT Case</button>
+        </div>
+
+        <div class="seccion">
+            <div class="titulo-sec">Placa Base</div>
+            <button onclick="cambiarComponente('placa', 'mobo_pro.glb', 0, 0.4, -0.3, 0.012)">Mobo Pro</button>
+            <button onclick="cambiarComponente('placa', 'mobo_generic.glb', 0, 0.4, -0.3, 0.012)">Mobo Generic</button>
+        </div>
+
+        <div class="seccion">
+            <div class="titulo-sec">Tarjeta Gráfica</div>
+            <button onclick="cambiarComponente('grafica', 'gpu_3090.glb', 0, 0.3, 0.1, 0.01)">RTX 3090</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_4090.glb', 0, 0.3, 0.1, 0.01)">RTX 4090</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_9070.glb', 0, 0.3, 0.1, 0.01)">RTX 9070</button>
+        </div>
+    </div>
+
     <script type="module" src="app.js"></script>
 </body>
 </html>
