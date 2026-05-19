@@ -72,17 +72,20 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         
-        if (tipo === 'caja') {
-            model.position.set(0, 0, 0);
-            model.scale.set(1, 1, 1);
-        } else if (tipo === 'placa') {
-            model.position.set(0, 0.5, -0.3);
-            model.scale.set(0.15, 0.15, 0.15); 
-        } else if (tipo === 'grafica') {
-            model.position.set(0, 0.3, 0.1);
-            model.scale.set(0.01, 0.01, 0.01);
-        }
-
+      if (tipo === 'caja') {
+    model.position.set(0, 0, 0);
+    model.scale.set(0.5, 0.5, 0.5); // 👈 Si sigue grande, prueba con 0.3 o 0.2
+}
+       else if (tipo === 'placa') {
+    // El segundo número (0.5) la sube hacia arriba. Juega con él para centrarla.
+    model.position.set(0, 0.5, -0.3); 
+    model.scale.set(0.8, 0.8, 0.8); // 👈 Súbelo a 1, 1, 1 o más si sigue pequeña
+}
+      else if (tipo === 'grafica') {
+    // Ajusta la posición para que se clave encima de la placa base
+    model.position.set(0, 0.3, 0.1); 
+    model.scale.set(0.05, 0.05, 0.05); // 👈 Modifica esto para emparejarla con la placa
+}
         scene.add(model);
         piezasActivas[tipo] = model;
 
