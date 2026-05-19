@@ -36,9 +36,9 @@ loadingManager.onError = function (url) {
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111116);
 
-// Cámara ajustada hacia atrás para ver bien la caja desde el principio
+// Volvemos a colocar la cámara original
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 3, 18); 
+camera.position.set(0, 2, 5); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -84,18 +84,18 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         
-        // --- SECCIÓN DE CALIBRACIÓN DE TAMAÑOS ---
+        // --- ↩️ RESTAURADOS LOS VALORES QUE YA TE FUNCIONABAN ---
         if (tipo === 'caja') {
-            model.position.set(0, -0.5, 0); 
-            model.scale.set(1, 1, 1); 
+            model.position.set(0, 0, 0);
+            model.scale.set(1, 1, 1);
         } else if (tipo === 'placa') {
-            model.position.set(0, 0.5, -0.5);
-            model.scale.set(1, 1, 1); 
+            model.position.set(0, 0.5, -0.3);
+            model.scale.set(0.15, 0.15, 0.15); 
         } else if (tipo === 'grafica') {
-            model.position.set(0, 0.5, 0);
-            model.scale.set(0, 0, 0.5); 
+            model.position.set(0, 0.3, 0.1);
+            model.scale.set(0.01, 0.01, 0.01);
         }
-        // ------------------------------------------
+        // ---------------------------------------------------------
 
         scene.add(model);
         piezasActivas[tipo] = model;
