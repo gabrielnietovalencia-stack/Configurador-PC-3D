@@ -7,6 +7,42 @@
         body { margin: 0; overflow: hidden; background-color: #111; font-family: sans-serif; }
         canvas { display: block; }
         
+        /* PANTALLA DE CARGA */
+        #pantalla-carga {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0d0d11;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #252525;
+            border-top: 5px solid #00ffff;
+            border-radius: 50%;
+            animation: girar 1s linear infinite;
+        }
+        @keyframes girar {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #texto-carga {
+            color: white;
+            font-family: sans-serif;
+            margin-top: 20px;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        /* MENÚ FLOTANTE */
         #menu {
             position: absolute;
             top: 20px;
@@ -15,14 +51,14 @@
             padding: 20px;
             border-radius: 10px;
             color: white;
-            width: 220px;
+            width: 240px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             border: 1px solid #333;
             z-index: 10;
         }
         h3 { margin-top: 0; color: #00ffff; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .seccion { margin-bottom: 15px; }
-        .titulo-sec { font-size: 12px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; }
+        .titulo-sec { font-size: 11px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; letter-spacing: 1px; }
         
         button {
             display: block;
@@ -36,6 +72,7 @@
             cursor: pointer;
             text-align: left;
             transition: all 0.2s;
+            font-size: 12px;
         }
         button:hover {
             background: #00ffff;
@@ -43,12 +80,22 @@
             font-weight: bold;
         }
 
-        /* NUEVO: Cuadro de resumen */
         #resumen {
             margin-top: 15px;
             padding-top: 10px;
             border-top: 1px solid #333;
             font-size: 13px;
+        }
+        
+        /* Caja del precio total */
+        #total-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
             color: #00ff88;
         }
     </style>
@@ -63,70 +110,45 @@
 </head>
 <body>
 
+    <div id="pantalla-carga">
+        <div class="spinner"></div>
+        <div id="texto-carga">Cargando componentes 3D...</div>
+    </div>
+
     <div id="menu">
-        <h3>Configurador PC</h3>
+        <h3>PC Builder 3D</h3>
         
         <div class="seccion">
             <div class="titulo-sec">Chasis (Cajas)</div>
-            <button onclick="cambiarComponente('caja', 'case_corsair.glb', 'Corsair iCUE')">Corsair Case</button>
-            <button onclick="cambiarComponente('caja', 'case_fractal.glb', 'Fractal North')">Fractal Case</button>
-            <button onclick="cambiarComponente('caja', 'case_nzxt.glb', 'NZXT H9')">NZXT Case</button>
+            <button onclick="cambiarComponente('caja', 'case_corsair.glb', 'Corsair iCUE', 150)">Corsair Case (150€)</button>
+            <button onclick="cambiarComponente('caja', 'case_fractal.glb', 'Fractal North', 180)">Fractal Case (180€)</button>
+            <button onclick="cambiarComponente('caja', 'case_nzxt.glb', 'NZXT H9', 200)">NZXT Case (200€)</button>
         </div>
 
         <div class="seccion">
             <div class="titulo-sec">Placa Base</div>
-            <button onclick="cambiarComponente('placa', 'mobo_pro.glb', 'ASUS Pro WS')">Mobo Pro</button>
-            <button onclick="cambiarComponente('placa', 'mobo_generic.glb', 'Mobo Genérica')">Mobo Generic</button>
+            <button onclick="cambiarComponente('placa', 'mobo_pro.glb', 'ASUS Pro WS', 350)">Mobo Pro (350€)</button>
+            <button onclick="cambiarComponente('placa', 'mobo_generic.glb', 'Mobo Genérica', 120)">Mobo Generic (120€)</button>
         </div>
 
         <div class="seccion">
             <div class="titulo-sec">Tarjeta Gráfica</div>
-            <button onclick="cambiarComponente('grafica', 'gpu_3090.glb', 'RTX 3090 Ti')">RTX 3090</button>
-            <button onclick="cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 4090 ROG')">RTX 4090</button>
-            <button onclick="cambiarComponente('grafica', 'gpu_9070.glb', 'RTX 9070 (Concept)')">RTX 9070</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_3090.glb', 'RTX 3090 Ti', 1200)">RTX 3090 (1200€)</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 4090 ROG', 2000)">RTX 4090 (2000€)</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_9070.glb', 'RTX 9070 Pro', 800)">RTX 9070 (800€)</button>
         </div>
 
         <div id="resumen">
-            <strong>Componentes activos:</strong>
-            <div id="txt-caja">Caja: Ninguna</div>
-            <div id="txt-placa">Placa: Ninguna</div>
-            <div id="txt-grafica">Gráfica: Ninguna</div>
+            <div id="txt-caja" style="color: #aaa;">Caja: -</div>
+            <div id="txt-placa" style="color: #aaa;">Placa: -</div>
+            <div id="txt-grafica" style="color: #aaa;">Gráfica: -</div>
+        </div>
+
+        <div id="total-box">
+            TOTAL: <strong id="precio-total">0</strong> €
         </div>
     </div>
 
     <script type="module" src="app.js"></script>
 </body>
-    #pantalla-carga {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #0d0d11;
-    z-index: 9999; /* Asegura que tape el menú y el 3D */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.5s ease; /* Efecto desvanecido al quitarse */
-}
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #252525;
-    border-top: 5px solid #00ffff;
-    border-radius: 50%;
-    animation: girar 1s linear infinite;
-}
-@keyframes girar {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-#texto-carga {
-    color: white;
-    font-family: sans-serif;
-    margin-top: 20px;
-    font-size: 18px;
-    letter-spacing: 1px;
-}
 </html>
