@@ -87,7 +87,7 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
         if (tipo === 'caja') {
             // Le devolvemos un tamaño decente para que se vea
             model.position.set(0, -0.5, 0); 
-            model.scale.set(0.8, 0.8, 0.8); 
+            model.scale.set(1, 1, 1); 
 
         } else if (tipo === 'placa') {
             // Era un puntito microscópico, ¡vamos a multiplicarla por 20!
