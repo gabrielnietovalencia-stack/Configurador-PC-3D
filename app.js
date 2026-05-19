@@ -97,7 +97,7 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
         } else if (tipo === 'grafica') {
             // Es un monstruo gigante, ¡vamos a encogerla muchísimo más! (Fíjate en los ceros)
             model.position.set(0, 0.5, 0);
-            model.scale.set(0.0015, 1.5, 0.0018); 
+            model.scale.set(0.0015, 3, 0.0018); 
         }
         // -----------------------------------------------------------------
         scene.add(model);
