@@ -1,79 +1,99 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x111111);
-
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 2, 5);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-scene.add(new THREE.AmbientLight(0xffffff, 1.5));
-const sunLight = new THREE.DirectionalLight(0xffffff, 1);
-sunLight.position.set(5, 5, 5);
-scene.add(sunLight);
-
-const loader = new GLTFLoader();
-
-let piezasActivas = {
-    caja: null,
-    placa: null,
-    grafica: null
-};
-
-// Esta función ignora los números del HTML y aplica las escalas correctas aquí abajo
-window.cambiarComponente = function(tipo, nombreArchivo) {
-    if (piezasActivas[tipo]) {
-        scene.remove(piezasActivas[tipo]);
-    }
-
-    loader.load(`models/${nombreArchivo}`, (gltf) => {
-        const model = gltf.scene;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Configurador PC 3D</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #111; font-family: sans-serif; }
+        canvas { display: block; }
         
-        // ========================================================
-        // REGLAS DE TAMAÑO PERSONALIZADAS (Ajusta estos números)
-        // ========================================================
-        if (tipo === 'caja') {
-            model.position.set(0, 0, 0);
-            model.scale.set(1, 1, 1); // Si la caja es gigante, puedes probar con 0.5 o 0.2
-            
-        } else if (tipo === 'placa') {
-            // Si antes era diminuta con 0.012, vamos a subirla a 0.15 para que sea más grande
-            model.position.set(0, 0.5, -0.3);
-            model.scale.set(0.15, 0.15, 0.15); 
-            
-        } else if (tipo === 'grafica') {
-            // La gráfica se veía bien en 0.01, la dejamos ahí
-            model.position.set(0, 0.3, 0.1);
-            model.scale.set(0.01, 0.01, 0.01);
+        #menu {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(20, 20, 20, 0.85);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            width: 220px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            z-index: 10;
         }
-        // ========================================================
+        h3 { margin-top: 0; color: #00ffff; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .seccion { margin-bottom: 15px; }
+        .titulo-sec { font-size: 12px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; }
+        
+        button {
+            display: block;
+            width: 100%;
+            background: #252525;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #00ffff;
+            color: #000;
+            font-weight: bold;
+        }
 
-        scene.add(model);
-        piezasActivas[tipo] = model;
-        console.log(`Montado correctamente: ${nombreArchivo}`);
-    }, undefined, (error) => console.error("Error cargando pieza:", error));
-};
+        /* NUEVO: Cuadro de resumen */
+        #resumen {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+            font-size: 13px;
+            color: #00ff88;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
 
-// Carga inicial automática al entrar a la web
-cambiarComponente('caja', 'case_corsair.glb');
-cambiarComponente('placa', 'mobo_pro.glb');
-cambiarComponente('grafica', 'gpu_4090.glb');
+    <div id="menu">
+        <h3>Configurador PC</h3>
+        
+        <div class="seccion">
+            <div class="titulo-sec">Chasis (Cajas)</div>
+            <button onclick="cambiarComponente('caja', 'case_corsair.glb', 'Corsair iCUE')">Corsair Case</button>
+            <button onclick="cambiarComponente('caja', 'case_fractal.glb', 'Fractal North')">Fractal Case</button>
+            <button onclick="cambiarComponente('caja', 'case_nzxt.glb', 'NZXT H9')">NZXT Case</button>
+        </div>
 
-function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
-}
-animate();
+        <div class="seccion">
+            <div class="titulo-sec">Placa Base</div>
+            <button onclick="cambiarComponente('placa', 'mobo_pro.glb', 'ASUS Pro WS')">Mobo Pro</button>
+            <button onclick="cambiarComponente('placa', 'mobo_generic.glb', 'Mobo Genérica')">Mobo Generic</button>
+        </div>
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+        <div class="seccion">
+            <div class="titulo-sec">Tarjeta Gráfica</div>
+            <button onclick="cambiarComponente('grafica', 'gpu_3090.glb', 'RTX 3090 Ti')">RTX 3090</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 4090 ROG')">RTX 4090</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_9070.glb', 'RTX 9070 (Concept)')">RTX 9070</button>
+        </div>
+
+        <div id="resumen">
+            <strong>Componentes activos:</strong>
+            <div id="txt-caja">Caja: Ninguna</div>
+            <div id="txt-placa">Placa: Ninguna</div>
+            <div id="txt-grafica">Gráfica: Ninguna</div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
