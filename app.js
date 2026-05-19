@@ -83,19 +83,23 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         
-        // --- SECCIÓN DE CALIBRACIÓN MANUAL (LO QUE SE TOCARÁ AL FINAL) ---
+     // --- SECCIÓN DE CALIBRACIÓN MANUAL ---
         if (tipo === 'caja') {
-            model.position.set(0, -0.5, 0);
-            model.scale.set(0.25, 0.25, 0.25);
+            // Le devolvemos un tamaño decente para que se vea
+            model.position.set(0, -0.5, 0); 
+            model.scale.set(0.8, 0.8, 0.8); 
+
         } else if (tipo === 'placa') {
-            model.position.set(0, 0.5, -0.3);
-            model.scale.set(0.15, 0.15, 0.15); 
+            // Era un puntito microscópico, ¡vamos a multiplicarla por 20!
+            model.position.set(0, 0.5, -0.5);
+            model.scale.set(3, 3, 3); 
+
         } else if (tipo === 'grafica') {
-            model.position.set(0, 0.3, 0.1);
-            model.scale.set(0.01, 0.01, 0.01);
+            // Es un monstruo gigante, ¡vamos a encogerla muchísimo más! (Fíjate en los ceros)
+            model.position.set(0, 0.5, 0);
+            model.scale.set(0.0015, 0.0015, 0.0015); 
         }
         // -----------------------------------------------------------------
-
         scene.add(model);
         piezasActivas[tipo] = model;
 
