@@ -87,13 +87,13 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
         // --- SECCIÓN DE CALIBRACIÓN DE TAMAÑOS ---
         if (tipo === 'caja') {
             model.position.set(0, -0.5, 0); 
-            model.scale.set(0.8, 0.8, 0.8); 
+            model.scale.set(1, 1, 1); 
         } else if (tipo === 'placa') {
             model.position.set(0, 0.5, -0.5);
-            model.scale.set(3, 3, 3); 
+            model.scale.set(1, 1, 1); 
         } else if (tipo === 'grafica') {
             model.position.set(0, 0.5, 0);
-            model.scale.set(0.0015, 0.0015, 0.0015); 
+            model.scale.set(0, 0, 0.5); 
         }
         // ------------------------------------------
 
