@@ -7,7 +7,6 @@
         body { margin: 0; overflow: hidden; background-color: #111; font-family: sans-serif; }
         canvas { display: block; }
         
-        /* Contenedor del menú flotante */
         #menu {
             position: absolute;
             top: 20px;
@@ -25,7 +24,6 @@
         .seccion { margin-bottom: 15px; }
         .titulo-sec { font-size: 12px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; }
         
-        /* Estilo de los botones */
         button {
             display: block;
             width: 100%;
@@ -44,6 +42,15 @@
             color: #000;
             font-weight: bold;
         }
+
+        /* NUEVO: Cuadro de resumen */
+        #resumen {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+            font-size: 13px;
+            color: #00ff88;
+        }
     </style>
     <script type="importmap">
         {
@@ -61,22 +68,29 @@
         
         <div class="seccion">
             <div class="titulo-sec">Chasis (Cajas)</div>
-            <button onclick="cambiarComponente('caja', 'case_corsair.glb', 0, 0, 0, 1)">Corsair Case</button>
-            <button onclick="cambiarComponente('caja', 'case_fractal.glb', 0, 0, 0, 1)">Fractal Case</button>
-            <button onclick="cambiarComponente('caja', 'case_nzxt.glb', 0, 0, 0, 1)">NZXT Case</button>
+            <button onclick="cambiarComponente('caja', 'case_corsair.glb', 'Corsair iCUE')">Corsair Case</button>
+            <button onclick="cambiarComponente('caja', 'case_fractal.glb', 'Fractal North')">Fractal Case</button>
+            <button onclick="cambiarComponente('caja', 'case_nzxt.glb', 'NZXT H9')">NZXT Case</button>
         </div>
 
         <div class="seccion">
             <div class="titulo-sec">Placa Base</div>
-            <button onclick="cambiarComponente('placa', 'mobo_pro.glb', 0, 0.4, -0.3, 0.012)">Mobo Pro</button>
-            <button onclick="cambiarComponente('placa', 'mobo_generic.glb', 0, 0.4, -0.3, 0.012)">Mobo Generic</button>
+            <button onclick="cambiarComponente('placa', 'mobo_pro.glb', 'ASUS Pro WS')">Mobo Pro</button>
+            <button onclick="cambiarComponente('placa', 'mobo_generic.glb', 'Mobo Genérica')">Mobo Generic</button>
         </div>
 
         <div class="seccion">
             <div class="titulo-sec">Tarjeta Gráfica</div>
-            <button onclick="cambiarComponente('grafica', 'gpu_3090.glb', 0, 0.3, 0.1, 0.01)">RTX 3090</button>
-            <button onclick="cambiarComponente('grafica', 'gpu_4090.glb', 0, 0.3, 0.1, 0.01)">RTX 4090</button>
-            <button onclick="cambiarComponente('grafica', 'gpu_9070.glb', 0, 0.3, 0.1, 0.01)">RTX 9070</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_3090.glb', 'RTX 3090 Ti')">RTX 3090</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 4090 ROG')">RTX 4090</button>
+            <button onclick="cambiarComponente('grafica', 'gpu_9070.glb', 'RTX 9070 (Concept)')">RTX 9070</button>
+        </div>
+
+        <div id="resumen">
+            <strong>Componentes activos:</strong>
+            <div id="txt-caja">Caja: Ninguna</div>
+            <div id="txt-placa">Placa: Ninguna</div>
+            <div id="txt-grafica">Gráfica: Ninguna</div>
         </div>
     </div>
 
