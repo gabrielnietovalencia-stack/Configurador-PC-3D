@@ -96,4 +96,37 @@
 
     <script type="module" src="app.js"></script>
 </body>
+    #pantalla-carga {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0d0d11;
+    z-index: 9999; /* Asegura que tape el menú y el 3D */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease; /* Efecto desvanecido al quitarse */
+}
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #252525;
+    border-top: 5px solid #00ffff;
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
+}
+@keyframes girar {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+#texto-carga {
+    color: white;
+    font-family: sans-serif;
+    margin-top: 20px;
+    font-size: 18px;
+    letter-spacing: 1px;
+}
 </html>
