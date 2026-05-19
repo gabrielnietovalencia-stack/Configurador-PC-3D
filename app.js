@@ -3,7 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ========================================================
-// 🚨 BOTÓN DE PÁNICO: Quita la pantalla a los 3 segundos pase lo que pase
+// 1. GESTOR DE CARGA Y BOTÓN DE PÁNICO (3 SEGUNDOS)
 // ========================================================
 setTimeout(() => {
     const pantalla = document.getElementById('pantalla-carga');
@@ -13,7 +13,6 @@ setTimeout(() => {
         setTimeout(() => { pantalla.style.display = 'none'; }, 500);
     }
 }, 3000); 
-// ========================================================
 
 const loadingManager = new THREE.LoadingManager();
 
@@ -31,6 +30,9 @@ loadingManager.onError = function (url) {
     if (pantalla) { pantalla.style.display = 'none'; }
 };
 
+// ========================================================
+// 2. CONFIGURACIÓN DE LA ESCENA ESCENARIO 3D
+// ========================================================
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111116);
 
@@ -44,14 +46,23 @@ renderer.toneMappingExposure = 1.2;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-scene.add(new THREE.AmbientLight(0xffffff, 1.2));
 
+// Iluminación
+scene.add(new THREE.AmbientLight(0xffffff, 1.2));
 const light = new THREE.DirectionalLight(0xffffff, 1.5);
 light.position.set(5, 8, 5);
 scene.add(light);
 
+// NUEVO: CUADRÍCULA HOLOGRÁFICA EN EL SUELO
+const gridHelper = new THREE.GridHelper(10, 20, 0x00ffff, 0x333333);
+gridHelper.position.y = -0.5; // Ajustada un pelo abajo como suelo
+scene.add(gridHelper);
+
 const loader = new GLTFLoader(loadingManager);
 
+// ========================================================
+// 3. LOGICA DE COMPONENTES Y CALCULADORA DE PRECIOS
+// ========================================================
 let piezasActivas = { caja: null, placa: null, grafica: null };
 let preciosActivos = { caja: 0, placa: 0, grafica: 0 };
 
@@ -72,20 +83,19 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         
-      if (tipo === 'caja') {
-    model.position.set(0, 0, 0);
-    model.scale.set(0.5, 0.5, 0.5); // 👈 Si sigue grande, prueba con 0.3 o 0.2
-}
-       else if (tipo === 'placa') {
-    // El segundo número (0.5) la sube hacia arriba. Juega con él para centrarla.
-    model.position.set(0, 0.5, -0.3); 
-    model.scale.set(0.8, 0.8, 0.8); // 👈 Súbelo a 1, 1, 1 o más si sigue pequeña
-}
-      else if (tipo === 'grafica') {
-    // Ajusta la posición para que se clave encima de la placa base
-    model.position.set(0, 0.3, 0.1); 
-    model.scale.set(0.05, 0.05, 0.05); // 👈 Modifica esto para emparejarla con la placa
-}
+        // --- SECCIÓN DE CALIBRACIÓN MANUAL (LO QUE SE TOCARÁ AL FINAL) ---
+        if (tipo === 'caja') {
+            model.position.set(0, 0, 0);
+            model.scale.set(1, 1, 1);
+        } else if (tipo === 'placa') {
+            model.position.set(0, 0.5, -0.3);
+            model.scale.set(0.15, 0.15, 0.15); 
+        } else if (tipo === 'grafica') {
+            model.position.set(0, 0.3, 0.1);
+            model.scale.set(0.01, 0.01, 0.01);
+        }
+        // -----------------------------------------------------------------
+
         scene.add(model);
         piezasActivas[tipo] = model;
 
@@ -97,11 +107,14 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     }, undefined, (error) => console.error(error));
 };
 
-// Carga inicial
+// Carga de componentes iniciales por defecto con sus precios
 cambiarComponente('caja', 'case_corsair.glb', 'Corsair iCUE', 150);
 cambiarComponente('placa', 'mobo_pro.glb', 'ASUS Pro WS', 350);
 cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 40 ROG', 2000);
 
+// ========================================================
+// 4. BUCLE DE RENDERIZADO ANIMACIÓN
+// ========================================================
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
