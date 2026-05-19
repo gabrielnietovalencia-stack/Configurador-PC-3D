@@ -36,7 +36,7 @@ loadingManager.onError = function (url) {
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111116);
 
-// Volvemos a colocar la cámara original
+// Cámara en su posición original
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 2, 5); 
 
@@ -47,9 +47,11 @@ renderer.toneMappingExposure = 1.2;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-// Activa el giro automático y ajusta la velocidad
+
+// 👇 AQUÍ ESTÁ LA MAGIA DE LA AUTO-ROTACIÓN
 controls.autoRotate = true;
-controls.autoRotateSpeed = 1.5; // 👈 Si quieres que gire más rápido, sube este número
+controls.autoRotateSpeed = 1.5;
+
 // Iluminación
 scene.add(new THREE.AmbientLight(0xffffff, 1.2));
 const light = new THREE.DirectionalLight(0xffffff, 1.5);
@@ -86,7 +88,7 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         
-        // --- ↩️ RESTAURADOS LOS VALORES QUE YA TE FUNCIONABAN ---
+        // --- VALORES DE TAMAÑO RESTAURADOS ---
         if (tipo === 'caja') {
             model.position.set(0, 0, 0);
             model.scale.set(1, 1, 1);
@@ -97,7 +99,7 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
             model.position.set(0, 0.3, 0.1);
             model.scale.set(0.01, 0.01, 0.01);
         }
-        // ---------------------------------------------------------
+        // -------------------------------------
 
         scene.add(model);
         piezasActivas[tipo] = model;
@@ -140,7 +142,10 @@ cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 40 ROG', 2000);
 // ========================================================
 function animate() {
     requestAnimationFrame(animate);
-    controls.update();
+    
+    // 👇 ESTO ES EL MOTOR QUE HACE QUE GIRE
+    controls.update(); 
+    
     renderer.render(scene, camera);
 }
 animate();
