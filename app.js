@@ -88,19 +88,20 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         
-        // --- VALORES DE TAMAÑO RESTAURADOS ---
+  // --- AQUÍ ESTÁ EL CAMPO DE BATALLA ---
         if (tipo === 'caja') {
             model.position.set(0, 0, 0);
             model.scale.set(1, 1, 1);
+            
         } else if (tipo === 'placa') {
-            model.position.set(0, 0.5, -0.3);
-            model.scale.set(0.15, 0.15, 0.15); 
+            model.position.set(0, 0.5, -0.3); // Juega con estos para moverla
+            model.scale.set(0.15, 0.15, 0.15); // Sube estos si es muy pequeña
+            
         } else if (tipo === 'grafica') {
-            model.position.set(0, 0.3, 0.1);
-            model.scale.set(0.01, 0.01, 0.01);
+            model.position.set(0, 0.3, 0.1); 
+            model.scale.set(0.01, 0.01, 0.01); // Baja estos si es gigante
         }
         // -------------------------------------
-
         scene.add(model);
         piezasActivas[tipo] = model;
 
