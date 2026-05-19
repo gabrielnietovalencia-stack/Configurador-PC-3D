@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js'; // 👈 LA LIBRERÍA MÁGICA
+// 👇 Importación directa a prueba de balas para el menú
+import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
 
 // ========================================================
 // 1. GESTOR DE CARGA
@@ -29,8 +30,9 @@ loadingManager.onLoad = function () {
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111116);
 
+// He alejado un poco la cámara para que lo veas todo con perspectiva
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 2, 5); 
+camera.position.set(0, 3, 10); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -60,36 +62,45 @@ let preciosActivos = { caja: 0, placa: 0, grafica: 0 };
 
 const gui = new GUI({ title: '🛠️ Calibrador 3D' });
 
-// Valores iniciales (los que tenías antes del lío)
+// Valores iniciales (mucho más pequeños para que no se coman la pantalla)
 const params = {
-    caja_Scale: 1, caja_X: 0, caja_Y: 0, caja_Z: 0,
-    placa_Scale: 0.15, placa_X: 0, placa_Y: 0.5, placa_Z: -0.3,
-    grafica_Scale: 0.01, grafica_X: 0, grafica_Y: 0.3, grafica_Z: 0.1,
+    caja_Scale: 0.1, caja_X: 0, caja_Y: 0, caja_Z: 0, caja_RotX: 0, caja_RotY: 0, caja_RotZ: 0,
+    placa_Scale: 0.05, placa_X: 0, placa_Y: 0.5, placa_Z: -0.3, placa_RotX: 0, placa_RotY: 0, placa_RotZ: 0,
+    grafica_Scale: 0.001, grafica_X: 0, grafica_Y: 0.3, grafica_Z: 0.1, grafica_RotX: 0, grafica_RotY: 0, grafica_RotZ: 0,
     autoRotar: false
 };
 
-// Controles de la CAJA
+// --- CAJA ---
 const folderCaja = gui.addFolder('📦 CAJA');
-folderCaja.add(params, 'caja_Scale', 0.01, 3, 0.01).name('Escala').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.scale.set(v,v,v) });
-folderCaja.add(params, 'caja_X', -3, 3, 0.01).name('Mover X').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.position.x = v });
-folderCaja.add(params, 'caja_Y', -3, 3, 0.01).name('Mover Y').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.position.y = v });
-folderCaja.add(params, 'caja_Z', -3, 3, 0.01).name('Mover Z').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.position.z = v });
+folderCaja.add(params, 'caja_Scale', 0.001, 2, 0.001).name('Escala').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.scale.set(v,v,v) });
+folderCaja.add(params, 'caja_X', -5, 5, 0.01).name('Mover X').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.position.x = v });
+folderCaja.add(params, 'caja_Y', -5, 5, 0.01).name('Mover Y').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.position.y = v });
+folderCaja.add(params, 'caja_Z', -5, 5, 0.01).name('Mover Z').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.position.z = v });
+folderCaja.add(params, 'caja_RotX', -3.14, 3.14, 0.01).name('Rotar X').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.rotation.x = v });
+folderCaja.add(params, 'caja_RotY', -3.14, 3.14, 0.01).name('Rotar Y').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.rotation.y = v });
+folderCaja.add(params, 'caja_RotZ', -3.14, 3.14, 0.01).name('Rotar Z').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.rotation.z = v });
 
-// Controles de la PLACA
+// --- PLACA ---
 const folderPlaca = gui.addFolder('🎛️ PLACA BASE');
-folderPlaca.add(params, 'placa_Scale', 0.01, 5, 0.01).name('Escala').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.scale.set(v,v,v) });
-folderPlaca.add(params, 'placa_X', -3, 3, 0.01).name('Mover X').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.position.x = v });
-folderPlaca.add(params, 'placa_Y', -3, 3, 0.01).name('Mover Y').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.position.y = v });
-folderPlaca.add(params, 'placa_Z', -3, 3, 0.01).name('Mover Z').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.position.z = v });
+folderPlaca.add(params, 'placa_Scale', 0.001, 2, 0.001).name('Escala').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.scale.set(v,v,v) });
+folderPlaca.add(params, 'placa_X', -5, 5, 0.01).name('Mover X').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.position.x = v });
+folderPlaca.add(params, 'placa_Y', -5, 5, 0.01).name('Mover Y').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.position.y = v });
+folderPlaca.add(params, 'placa_Z', -5, 5, 0.01).name('Mover Z').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.position.z = v });
+folderPlaca.add(params, 'placa_RotX', -3.14, 3.14, 0.01).name('Rotar X').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.rotation.x = v });
+folderPlaca.add(params, 'placa_RotY', -3.14, 3.14, 0.01).name('Rotar Y').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.rotation.y = v });
+folderPlaca.add(params, 'placa_RotZ', -3.14, 3.14, 0.01).name('Rotar Z').onChange(v => { if(piezasActivas.placa) piezasActivas.placa.rotation.z = v });
 
-// Controles de la GRÁFICA (Con escala mucho más sensible)
+// --- GRÁFICA ---
 const folderGrafica = gui.addFolder('🎮 GRÁFICA');
 folderGrafica.add(params, 'grafica_Scale', 0.0001, 0.1, 0.0001).name('Escala').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.scale.set(v,v,v) });
-folderGrafica.add(params, 'grafica_X', -3, 3, 0.01).name('Mover X').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.position.x = v });
-folderGrafica.add(params, 'grafica_Y', -3, 3, 0.01).name('Mover Y').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.position.y = v });
-folderGrafica.add(params, 'grafica_Z', -3, 3, 0.01).name('Mover Z').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.position.z = v });
+folderGrafica.add(params, 'grafica_X', -5, 5, 0.01).name('Mover X').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.position.x = v });
+folderGrafica.add(params, 'grafica_Y', -5, 5, 0.01).name('Mover Y').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.position.y = v });
+folderGrafica.add(params, 'grafica_Z', -5, 5, 0.01).name('Mover Z').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.position.z = v });
+folderGrafica.add(params, 'grafica_RotX', -3.14, 3.14, 0.01).name('Rotar X').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.rotation.x = v });
+folderGrafica.add(params, 'grafica_RotY', -3.14, 3.14, 0.01).name('Rotar Y').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.rotation.y = v });
+folderGrafica.add(params, 'grafica_RotZ', -3.14, 3.14, 0.01).name('Rotar Z').onChange(v => { if(piezasActivas.grafica) piezasActivas.grafica.rotation.z = v });
 
-// Control del giro automático
+// --- UTILIDADES ---
 gui.add(params, 'autoRotar').name('🔄 Auto-Rotación');
 
 // ========================================================
@@ -117,12 +128,15 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
         // Asignar los valores del panel al modelo recién cargado
         if (tipo === 'caja') {
             model.position.set(params.caja_X, params.caja_Y, params.caja_Z);
+            model.rotation.set(params.caja_RotX, params.caja_RotY, params.caja_RotZ);
             model.scale.set(params.caja_Scale, params.caja_Scale, params.caja_Scale);
         } else if (tipo === 'placa') {
             model.position.set(params.placa_X, params.placa_Y, params.placa_Z);
+            model.rotation.set(params.placa_RotX, params.placa_RotY, params.placa_RotZ);
             model.scale.set(params.placa_Scale, params.placa_Scale, params.placa_Scale);
         } else if (tipo === 'grafica') {
             model.position.set(params.grafica_X, params.grafica_Y, params.grafica_Z);
+            model.rotation.set(params.grafica_RotX, params.grafica_RotY, params.grafica_RotZ);
             model.scale.set(params.grafica_Scale, params.grafica_Scale, params.grafica_Scale);
         }
 
