@@ -92,12 +92,12 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
         } else if (tipo === 'placa') {
             // Era un puntito microscópico, ¡vamos a multiplicarla por 20!
             model.position.set(0, 0.5, -0.5);
-            model.scale.set(3, 3, 3); 
+            model.scale.set(5, 5, 5); 
 
         } else if (tipo === 'grafica') {
             // Es un monstruo gigante, ¡vamos a encogerla muchísimo más! (Fíjate en los ceros)
             model.position.set(0, 0.5, 0);
-            model.scale.set(0.0015, 0.0015, 0.0015); 
+            model.scale.set(0.0015, 1.5, 0.0018); 
         }
         // -----------------------------------------------------------------
         scene.add(model);
