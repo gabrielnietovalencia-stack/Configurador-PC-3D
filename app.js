@@ -47,7 +47,9 @@ renderer.toneMappingExposure = 1.2;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-
+// Activa el giro automático y ajusta la velocidad
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.5; // 👈 Si quieres que gire más rápido, sube este número
 // Iluminación
 scene.add(new THREE.AmbientLight(0xffffff, 1.2));
 const light = new THREE.DirectionalLight(0xffffff, 1.5);
