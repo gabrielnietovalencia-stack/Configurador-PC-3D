@@ -40,7 +40,7 @@ function cargarPieza(nombreArchivo, x = 0, y = 0, z = 0, escala = 1) {
 // 4. Montaje de prueba inicial
 // Vamos a cargar la caja Corsair y la placa base Pro
 cargarPieza('case_corsair.glb', 0, 1, 1, 1);
-cargarPieza('mobo_pro.glb', 0, 0, 1, 0.6); // La placa suele ir más pequeña y atrás
+cargarPieza('mobo_pro.glb', 0, 0, 1, 0.1); // La placa suele ir más pequeña y atrás
 
 // 5. Animación
 function animate() {
