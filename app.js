@@ -2,30 +2,35 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-// 1. GESTOR DE CARGA (El interruptor de la pantalla)
+// ========================================================
+// 🚨 BOTÓN DE PÁNICO: Quita la pantalla a los 3 segundos pase lo que pase
+// ========================================================
+setTimeout(() => {
+    const pantalla = document.getElementById('pantalla-carga');
+    if (pantalla && pantalla.style.display !== 'none') {
+        console.warn("Tiempo límite alcanzado. Forzando apertura de la web...");
+        pantalla.style.opacity = '0';
+        setTimeout(() => { pantalla.style.display = 'none'; }, 500);
+    }
+}, 3000); 
+// ========================================================
+
 const loadingManager = new THREE.LoadingManager();
 
-// Función que se activa cuando TODO se ha cargado con éxito
 loadingManager.onLoad = function () {
     const pantalla = document.getElementById('pantalla-carga');
     if (pantalla) {
-        pantalla.style.opacity = '0'; // Desvanecer
-        setTimeout(() => {
-            pantalla.style.display = 'none'; // Ocultar del todo
-        }, 500);
+        pantalla.style.opacity = '0';
+        setTimeout(() => { pantalla.style.display = 'none'; }, 500);
     }
 };
 
-// Sistema de emergencia: Si un archivo falla, quitamos la pantalla igual para ver el error
 loadingManager.onError = function (url) {
-    console.error('Error cargando: ' + url);
+    console.error('Error cargando el archivo: ' + url);
     const pantalla = document.getElementById('pantalla-carga');
-    if (pantalla) {
-        pantalla.style.display = 'none';
-    }
+    if (pantalla) { pantalla.style.display = 'none'; }
 };
 
-// 2. CONFIGURACIÓN DE LA ESCENA 3D
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111116);
 
@@ -45,16 +50,15 @@ const light = new THREE.DirectionalLight(0xffffff, 1.5);
 light.position.set(5, 8, 5);
 scene.add(light);
 
-// Pasamos el loadingManager al cargador de archivos
 const loader = new GLTFLoader(loadingManager);
 
-// 3. LÓGICA DEL CONFIGURADOR Y PRECIOS
 let piezasActivas = { caja: null, placa: null, grafica: null };
 let preciosActivos = { caja: 0, placa: 0, grafica: 0 };
 
 function actualizarPrecioTotal() {
     const total = preciosActivos.caja + preciosActivos.placa + preciosActivos.grafica;
-    document.getElementById('precio-total').innerText = total;
+    const elTotal = document.getElementById('precio-total');
+    if (elTotal) elTotal.innerText = total;
 }
 
 window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
@@ -68,7 +72,6 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         
-        // Reglas de escala provisionales
         if (tipo === 'caja') {
             model.position.set(0, 0, 0);
             model.scale.set(1, 1, 1);
@@ -83,18 +86,19 @@ window.cambiarComponente = function(tipo, nombreArchivo, nombreBonito, precio) {
         scene.add(model);
         piezasActivas[tipo] = model;
 
-        // Actualizar textos del menú flotante
-        document.getElementById(`txt-${tipo}`).innerHTML = `<strong>${tipo.toUpperCase()}:</strong> ${nombreBonito} (${precio}€)`;
+        const elTexto = document.getElementById(`txt-${tipo}`);
+        if (elTexto) {
+            elTexto.innerHTML = `<strong>${tipo.toUpperCase()}:</strong> ${nombreBonito} (${precio}€)`;
+        }
 
     }, undefined, (error) => console.error(error));
 };
 
-// 4. CARGA INICIAL (Lo que se descarga mientras gira el círculo)
+// Carga inicial
 cambiarComponente('caja', 'case_corsair.glb', 'Corsair iCUE', 150);
 cambiarComponente('placa', 'mobo_pro.glb', 'ASUS Pro WS', 350);
 cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 40 ROG', 2000);
 
-// 5. BUCLE DE ANIMACIÓN
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
