@@ -2,9 +2,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-// 1. Escena y Cámara
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x111111); // Fondo casi negro
+scene.background = new THREE.Color(0x111111);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 2, 5);
@@ -13,36 +12,45 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// 2. Controles y Luces
 const controls = new OrbitControls(camera, renderer.domElement);
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-scene.add(ambientLight);
-
+scene.add(new THREE.AmbientLight(0xffffff, 1.5));
 const sunLight = new THREE.DirectionalLight(0xffffff, 1);
 sunLight.position.set(5, 5, 5);
 scene.add(sunLight);
 
-// 3. Cargador de Modelos
 const loader = new GLTFLoader();
 
-function cargarPieza(nombreArchivo, x = 0, y = 0, z = 0, escala = 1) {
+// Diccionario para guardar las piezas activas y poder cambiarlas luego
+let piezasActivas = {
+    caja: null,
+    placa: null,
+    grafica: null
+};
+
+// Función mejorada para cargar
+window.cambiarComponente = function(tipo, nombreArchivo, x = 0, y = 0, z = 0, escala = 1) {
+    // Si ya hay una pieza de ese tipo puesta, la borramos de la escena
+    if (piezasActivas[tipo]) {
+        scene.remove(piezasActivas[tipo]);
+    }
+
     loader.load(`models/${nombreArchivo}`, (gltf) => {
         const model = gltf.scene;
         model.position.set(x, y, z);
         model.scale.set(escala, escala, escala);
+        
         scene.add(model);
-        console.log("Cargado con éxito: " + nombreArchivo);
-    }, undefined, (error) => {
-        console.error("Error al cargar " + nombreArchivo, error);
-    });
-}
+        piezasActivas[tipo] = model; // Guardamos la nueva pieza
+        console.log(`Montado: ${tipo} -> ${nombreArchivo}`);
+    }, undefined, (error) => console.error(error));
+};
 
-// 4. Montaje de prueba inicial
-// Vamos a cargar la caja Corsair y la placa base Pro
-cargarPieza('case_corsair.glb', 0, 1, 1, 1);
-cargarPieza('mobo_pro.glb', 0, 1, 1, 0.1); // La placa suele ir más pequeña y atrás
+// --- MONTAJE INICIAL DE PRUEBA ---
+// Tipo de pieza, Nombre de archivo, X, Y, Z, Escala
+cambiarComponente('caja', 'case_corsair.glb', 0, 0, 0, 1);
+cambiarComponente('placa', 'mobo_pro.glb', 0, 0.5, -0.3, 0.012); 
+cambiarComponente('grafica', 'gpu_4090.glb', 0, 0.3, 0.1, 0.01); // Tu nueva gráfica
 
-// 5. Animación
 function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -50,11 +58,8 @@ function animate() {
 }
 animate();
 
-// Ajustar ventana si cambias el tamaño del navegador
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
-// Añadimos la gráfica (ajustando la escala inicial a 0.01 por si acaso)
-cargarPieza('gpu_4090.glb', 0, 0.3, 0.1, 0.01);
