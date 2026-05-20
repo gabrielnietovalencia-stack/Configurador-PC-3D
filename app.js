@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm'; // El menú mágico
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js'; // <-- Importación corregida y segura
 
 // ========================================================
 // 1. GESTOR DE CARGA
@@ -68,7 +68,7 @@ const params = {
     autoRotar: false
 };
 
-// --- CAJA (Límites expandidos para piezas rebeldes) ---
+// --- CAJA ---
 const folderCaja = gui.addFolder('📦 CAJA');
 folderCaja.add(params, 'caja_Scale', 0.0001, 500, 0.01).name('Escala').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.scale.set(v,v,v) });
 folderCaja.add(params, 'caja_X', -100, 100, 0.1).name('Mover X').onChange(v => { if(piezasActivas.caja) piezasActivas.caja.position.x = v });
