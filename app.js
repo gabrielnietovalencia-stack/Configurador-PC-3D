@@ -13,7 +13,7 @@ setTimeout(() => {
         pantalla.style.opacity = '0';
         setTimeout(() => { pantalla.style.display = 'none'; }, 500);
     }
-}, 3000);
+}, 4000);
 
 const loadingManager = new THREE.LoadingManager();
 loadingManager.onLoad = function () {
@@ -25,7 +25,7 @@ loadingManager.onLoad = function () {
 };
 
 // ========================================================
-// 2. CONFIGURACIÓN DE LA ESCENA Y CÁMARA
+// 2. ESCENA Y CÁMARA
 // ========================================================
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111116);
@@ -40,7 +40,7 @@ renderer.toneMappingExposure = 1.2;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;   // ← Movimiento suave de cámara
+controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
 // ========================================================
@@ -50,8 +50,6 @@ scene.add(new THREE.AmbientLight(0xffffff, 1.2));
 const light = new THREE.DirectionalLight(0xffffff, 1.5);
 light.position.set(5, 8, 5);
 scene.add(light);
-
-// Luz de relleno desde abajo para que los modelos no queden oscuros por abajo
 const lightFill = new THREE.DirectionalLight(0x8888ff, 0.4);
 lightFill.position.set(-5, -3, -5);
 scene.add(lightFill);
@@ -61,154 +59,201 @@ gridHelper.position.y = -0.5;
 scene.add(gridHelper);
 
 // ========================================================
-// 4. TRANSFORM CONTROLS (HERRAMIENTA DE RATÓN)
+// 4. TRANSFORM CONTROLS
 // ========================================================
 const transformControl = new TransformControls(camera, renderer.domElement);
-transformControl.addEventListener('dragging-changed', function (event) {
-    controls.enabled = !event.value;
-});
+transformControl.addEventListener('dragging-changed', e => { controls.enabled = !e.value; });
 scene.add(transformControl);
 
 // ========================================================
-// 5. NORMALIZACIÓN AUTOMÁTICA DE MODELOS  ← LA CLAVE
+// 5. BASE DE DATOS DE COMPATIBILIDAD
 // ========================================================
-
-// Tamaño objetivo para cada tipo de componente (en unidades Three.js)
-// Ajusta estos valores si quieres que los componentes sean más grandes o pequeños
-const TAMAÑOS_OBJETIVO = {
-    caja:    2.5,   // La caja es el componente principal, más grande
-    placa:   1.0,   // La placa base, mediana
-    grafica: 0.9    // La GPU, un poco más pequeña que la placa
+// socket    → el socket de CPU que acepta la placa, o el socket que tiene la CPU
+// ramTipo   → tipo de RAM que acepta la placa, o el tipo que es la RAM
+const COMPAT_DB = {
+    // PLACAS BASE
+    'mobo_pro.glb':     { socket: 'AM4',     ramTipo: 'DDR4' },
+    'mobo_generic.glb': { socket: 'AM4',     ramTipo: 'DDR4' },
+    'mobo_z790.glb':    { socket: 'LGA1700', ramTipo: 'DDR5' },
+    'mobo_b660.glb':    { socket: 'LGA1700', ramTipo: 'DDR4' },
+    // CPUs
+    'cpu_5900x.glb':    { socket: 'AM4' },
+    'cpu_5600x.glb':    { socket: 'AM4' },
+    'cpu_i9.glb':       { socket: 'LGA1700' },
+    'cpu_i5.glb':       { socket: 'LGA1700' },
+    // RAM
+    'ram_ddr4.glb':     { ramTipo: 'DDR4' },
+    'ram_ddr5.glb':     { ramTipo: 'DDR5' },
+    // GPU y Caja: siempre compatibles
+    'gpu_4090.glb':     {},
+    'gpu_3090.glb':     {},
+    'case_corsair.glb': {},
+    'case_fractal.glb': {},
 };
 
-// Posición Y base de la escena (nivel del suelo)
-const SUELO_Y = -0.5;
+// Archivo seleccionado actualmente por tipo
+const archivoActual = { caja: null, placa: null, cpu: null, ram: null, grafica: null };
 
-function normalizarModelo(model, tipo) {
-    // Paso 1: calcular el bounding box del modelo TAL COMO VIENE del GLB
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z);
+// ========================================================
+// 6. VERIFICACIÓN DE COMPATIBILIDAD
+// ========================================================
+function verificarCompatibilidad() {
+    const errores = [];
 
-    // Paso 2: calcular la escala para que quepa en el tamaño objetivo
-    const escalaFinal = TAMAÑOS_OBJETIVO[tipo] / maxDim;
-    model.scale.setScalar(escalaFinal);
+    const placa = archivoActual.placa ? COMPAT_DB[archivoActual.placa] : null;
+    const cpu   = archivoActual.cpu   ? COMPAT_DB[archivoActual.cpu]   : null;
+    const ram   = archivoActual.ram   ? COMPAT_DB[archivoActual.ram]   : null;
 
-    // Paso 3: re-calcular el bounding box con la nueva escala aplicada
-    const box2 = new THREE.Box3().setFromObject(model);
-    const centro = box2.getCenter(new THREE.Vector3());
+    // CPU vs Placa (socket)
+    if (placa && cpu && placa.socket !== cpu.socket) {
+        errores.push(`Socket CPU (${cpu.socket}) ≠ Placa (${placa.socket})`);
+    }
 
-    // Paso 4: centrar en X y Z, y posar el modelo sobre el suelo en Y
-    model.position.x -= centro.x;
-    model.position.z -= centro.z;
-    model.position.y = SUELO_Y - box2.min.y + model.position.y;
+    // RAM vs Placa (tipo DDR)
+    if (placa && ram && placa.ramTipo !== ram.ramTipo) {
+        errores.push(`RAM ${ram.ramTipo} ≠ Placa requiere ${placa.ramTipo}`);
+    }
 
-    return escalaFinal;
+    const todoSeleccionado = !!(archivoActual.placa && archivoActual.cpu && archivoActual.ram);
+
+    if (window.onCompatibilidadActualizada) {
+        window.onCompatibilidadActualizada(errores, todoSeleccionado);
+    }
 }
 
 // ========================================================
-// 6. PANEL DE CALIBRACIÓN (GUI)
+// 7. NORMALIZACIÓN AUTOMÁTICA DE TAMAÑO
 // ========================================================
-let piezasActivas  = { caja: null, placa: null, grafica: null };
-let preciosActivos = { caja: 0,    placa: 0,    grafica: 0 };
-
-const gui = new GUI({ title: '🛠️ Calibrador 3D Avanzado' });
-
-const params = {
-    piezaAEditar: 'Ninguna',
-    modoRaton: 'translate',
-    caja_Scale: 1,    caja_X: 0,    caja_Y: 0,    caja_Z: 0,
-    caja_RotX: 0,     caja_RotY: 0, caja_RotZ: 0,
-    placa_Scale: 1,   placa_X: 0,   placa_Y: 0,   placa_Z: 0,
-    placa_RotX: 0,    placa_RotY: 0,placa_RotZ: 0,
-    grafica_Scale: 1, grafica_X: 0, grafica_Y: 0, grafica_Z: 0,
-    grafica_RotX: 0,  grafica_RotY: 0, grafica_RotZ: 0,
-    autoRotar: false
+const TAMAÑOS_OBJETIVO = {
+    caja:    2.5,
+    placa:   1.0,
+    cpu:     0.4,
+    ram:     0.6,
+    grafica: 0.9,
 };
 
-// --- HERRAMIENTAS DE RATÓN ---
+const SUELO_Y = -0.5;
+
+function normalizarModelo(model, tipo) {
+    const box1   = new THREE.Box3().setFromObject(model);
+    const size   = box1.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const escala = TAMAÑOS_OBJETIVO[tipo] / maxDim;
+    model.scale.setScalar(escala);
+
+    const box2   = new THREE.Box3().setFromObject(model);
+    const centro = box2.getCenter(new THREE.Vector3());
+    model.position.x -= centro.x;
+    model.position.z -= centro.z;
+    model.position.y  = SUELO_Y - box2.min.y + model.position.y;
+    return escala;
+}
+
+// Placeholder geométrico si falta el GLB
+function crearPlaceholder(tipo) {
+    const group = new THREE.Group();
+    const mat   = new THREE.MeshStandardMaterial({ metalness: 0.8, roughness: 0.2 });
+    let geo;
+    switch (tipo) {
+        case 'cpu':
+            mat.color.set(0x999999);
+            geo = new THREE.BoxGeometry(0.8, 0.06, 0.8);
+            const chip = new THREE.Mesh(
+                new THREE.BoxGeometry(0.5, 0.04, 0.5),
+                new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.1 })
+            );
+            chip.position.y = 0.05;
+            group.add(chip);
+            break;
+        case 'ram':
+            mat.color.set(0x1a3a8a);
+            geo = new THREE.BoxGeometry(0.12, 1.4, 0.35);
+            break;
+        default:
+            mat.color.set(0x334455);
+            geo = new THREE.BoxGeometry(1, 1, 1);
+    }
+    group.add(new THREE.Mesh(geo, mat));
+    return group;
+}
+
+// ========================================================
+// 8. GUI DE CALIBRACIÓN
+// ========================================================
+const TIPOS    = ['caja', 'placa', 'cpu', 'ram', 'grafica'];
+const NOMBRES  = { caja: 'CAJA', placa: 'PLACA BASE', cpu: 'CPU', ram: 'RAM', grafica: 'GRÁFICA' };
+const ICONOS   = { caja: '📦',   placa: '🎛️',          cpu: '🔲',  ram: '💾',  grafica: '🎮' };
+
+let piezasActivas  = { caja: null, placa: null, cpu: null, ram: null, grafica: null };
+let preciosActivos = { caja: 0,    placa: 0,    cpu: 0,   ram: 0,   grafica: 0    };
+
+const gui    = new GUI({ title: '🛠️ Calibrador 3D Avanzado' });
+const params = { piezaAEditar: 'Ninguna', modoRaton: 'translate', autoRotar: false };
+
+TIPOS.forEach(t => {
+    params[`${t}_Scale`] = 1;
+    params[`${t}_X`] = 0; params[`${t}_Y`] = 0; params[`${t}_Z`] = 0;
+    params[`${t}_RotX`] = 0; params[`${t}_RotY`] = 0; params[`${t}_RotZ`] = 0;
+});
+
+// Herramientas de ratón
 const folderRaton = gui.addFolder('🧲 HERRAMIENTAS DE RATÓN');
-folderRaton.add(params, 'piezaAEditar', ['Ninguna', 'Caja', 'Placa', 'Grafica'])
+folderRaton.add(params, 'piezaAEditar', ['Ninguna', 'Caja', 'Placa', 'CPU', 'RAM', 'Grafica'])
     .name('👉 Agarrar pieza')
     .onChange(v => {
-        if (v === 'Ninguna')  transformControl.detach();
-        if (v === 'Caja'    && piezasActivas.caja)    transformControl.attach(piezasActivas.caja);
-        if (v === 'Placa'   && piezasActivas.placa)   transformControl.attach(piezasActivas.placa);
-        if (v === 'Grafica' && piezasActivas.grafica) transformControl.attach(piezasActivas.grafica);
+        const mapa = { Ninguna: null, Caja: 'caja', Placa: 'placa', CPU: 'cpu', RAM: 'ram', Grafica: 'grafica' };
+        const tipo = mapa[v];
+        if (!tipo) { transformControl.detach(); return; }
+        if (piezasActivas[tipo]) transformControl.attach(piezasActivas[tipo]);
     });
 folderRaton.add(params, 'modoRaton', { Mover: 'translate', Rotar: 'rotate', Escalar: 'scale' })
     .name('Acción')
     .onChange(v => transformControl.setMode(v));
 
-// --- CAJA ---
-const folderCaja = gui.addFolder('📦 CAJA (Manual)');
-folderCaja.add(params, 'caja_Scale', 0.0001, 500, 0.01).name('Escala').onChange(v => { if (piezasActivas.caja) piezasActivas.caja.scale.setScalar(v); });
-folderCaja.add(params, 'caja_X', -10, 10, 0.01).name('Mover X').onChange(v => { if (piezasActivas.caja) piezasActivas.caja.position.x = v; });
-folderCaja.add(params, 'caja_Y', -10, 10, 0.01).name('Mover Y').onChange(v => { if (piezasActivas.caja) piezasActivas.caja.position.y = v; });
-folderCaja.add(params, 'caja_Z', -10, 10, 0.01).name('Mover Z').onChange(v => { if (piezasActivas.caja) piezasActivas.caja.position.z = v; });
-folderCaja.add(params, 'caja_RotX', -6.28, 6.28, 0.01).name('Rotar X').onChange(v => { if (piezasActivas.caja) piezasActivas.caja.rotation.x = v; });
-folderCaja.add(params, 'caja_RotY', -6.28, 6.28, 0.01).name('Rotar Y').onChange(v => { if (piezasActivas.caja) piezasActivas.caja.rotation.y = v; });
-folderCaja.add(params, 'caja_RotZ', -6.28, 6.28, 0.01).name('Rotar Z').onChange(v => { if (piezasActivas.caja) piezasActivas.caja.rotation.z = v; });
-folderCaja.close();
-
-// --- PLACA ---
-const folderPlaca = gui.addFolder('🎛️ PLACA BASE (Manual)');
-folderPlaca.add(params, 'placa_Scale', 0.0001, 500, 0.01).name('Escala').onChange(v => { if (piezasActivas.placa) piezasActivas.placa.scale.setScalar(v); });
-folderPlaca.add(params, 'placa_X', -10, 10, 0.01).name('Mover X').onChange(v => { if (piezasActivas.placa) piezasActivas.placa.position.x = v; });
-folderPlaca.add(params, 'placa_Y', -10, 10, 0.01).name('Mover Y').onChange(v => { if (piezasActivas.placa) piezasActivas.placa.position.y = v; });
-folderPlaca.add(params, 'placa_Z', -10, 10, 0.01).name('Mover Z').onChange(v => { if (piezasActivas.placa) piezasActivas.placa.position.z = v; });
-folderPlaca.add(params, 'placa_RotX', -6.28, 6.28, 0.01).name('Rotar X').onChange(v => { if (piezasActivas.placa) piezasActivas.placa.rotation.x = v; });
-folderPlaca.add(params, 'placa_RotY', -6.28, 6.28, 0.01).name('Rotar Y').onChange(v => { if (piezasActivas.placa) piezasActivas.placa.rotation.y = v; });
-folderPlaca.add(params, 'placa_RotZ', -6.28, 6.28, 0.01).name('Rotar Z').onChange(v => { if (piezasActivas.placa) piezasActivas.placa.rotation.z = v; });
-folderPlaca.close();
-
-// --- GRÁFICA ---
-const folderGrafica = gui.addFolder('🎮 GRÁFICA (Manual)');
-folderGrafica.add(params, 'grafica_Scale', 0.0001, 500, 0.01).name('Escala').onChange(v => { if (piezasActivas.grafica) piezasActivas.grafica.scale.setScalar(v); });
-folderGrafica.add(params, 'grafica_X', -10, 10, 0.01).name('Mover X').onChange(v => { if (piezasActivas.grafica) piezasActivas.grafica.position.x = v; });
-folderGrafica.add(params, 'grafica_Y', -10, 10, 0.01).name('Mover Y').onChange(v => { if (piezasActivas.grafica) piezasActivas.grafica.position.y = v; });
-folderGrafica.add(params, 'grafica_Z', -10, 10, 0.01).name('Mover Z').onChange(v => { if (piezasActivas.grafica) piezasActivas.grafica.position.z = v; });
-folderGrafica.add(params, 'grafica_RotX', -6.28, 6.28, 0.01).name('Rotar X').onChange(v => { if (piezasActivas.grafica) piezasActivas.grafica.rotation.x = v; });
-folderGrafica.add(params, 'grafica_RotY', -6.28, 6.28, 0.01).name('Rotar Y').onChange(v => { if (piezasActivas.grafica) piezasActivas.grafica.rotation.y = v; });
-folderGrafica.add(params, 'grafica_RotZ', -6.28, 6.28, 0.01).name('Rotar Z').onChange(v => { if (piezasActivas.grafica) piezasActivas.grafica.rotation.z = v; });
-folderGrafica.close();
+// Carpeta por cada tipo de componente
+TIPOS.forEach(t => {
+    const folder = gui.addFolder(`${ICONOS[t]} ${NOMBRES[t]} (Manual)`);
+    folder.add(params, `${t}_Scale`, 0.001, 200, 0.01).name('Escala').onChange(v => { if (piezasActivas[t]) piezasActivas[t].scale.setScalar(v); });
+    ['X','Y','Z'].forEach(eje => {
+        folder.add(params, `${t}_${eje}`, -10, 10, 0.01).name(`Mover ${eje}`).onChange(v => { if (piezasActivas[t]) piezasActivas[t].position[eje.toLowerCase()] = v; });
+    });
+    ['RotX','RotY','RotZ'].forEach(r => {
+        const eje = r.slice(-1).toLowerCase();
+        folder.add(params, `${t}_${r}`, -6.28, 6.28, 0.01).name(`Rotar ${r.slice(-1)}`).onChange(v => { if (piezasActivas[t]) piezasActivas[t].rotation[eje] = v; });
+    });
+    folder.close();
+});
 
 gui.add(params, 'autoRotar').name('🔄 Auto-Rotación');
 
-// Sincronizar GUI cuando se arrastra con el ratón
+// Sincronizar GUI al mover con ratón
 transformControl.addEventListener('change', () => {
     const obj = transformControl.object;
     if (!obj) return;
-
-    let tipo = null;
-    if (obj === piezasActivas.caja)    tipo = 'caja';
-    if (obj === piezasActivas.placa)   tipo = 'placa';
-    if (obj === piezasActivas.grafica) tipo = 'grafica';
+    const tipo = TIPOS.find(t => piezasActivas[t] === obj);
     if (!tipo) return;
-
-    params[`${tipo}_X`]    = obj.position.x;
-    params[`${tipo}_Y`]    = obj.position.y;
-    params[`${tipo}_Z`]    = obj.position.z;
-    params[`${tipo}_RotX`] = obj.rotation.x;
-    params[`${tipo}_RotY`] = obj.rotation.y;
-    params[`${tipo}_RotZ`] = obj.rotation.z;
-    params[`${tipo}_Scale`]= obj.scale.x;
+    params[`${tipo}_X`]     = obj.position.x;
+    params[`${tipo}_Y`]     = obj.position.y;
+    params[`${tipo}_Z`]     = obj.position.z;
+    params[`${tipo}_RotX`]  = obj.rotation.x;
+    params[`${tipo}_RotY`]  = obj.rotation.y;
+    params[`${tipo}_RotZ`]  = obj.rotation.z;
+    params[`${tipo}_Scale`] = obj.scale.x;
     gui.controllersRecursive().forEach(c => c.updateDisplay());
 });
 
 // ========================================================
-// 7. LÓGICA DE CARGA DE COMPONENTES
+// 9. LÓGICA DE CARGA DE COMPONENTES
 // ========================================================
 const loader = new GLTFLoader(loadingManager);
 
 function actualizarPrecioTotal() {
-    const total = preciosActivos.caja + preciosActivos.placa + preciosActivos.grafica;
-    const elTotal = document.getElementById('precio-total');
-    if (elTotal) elTotal.innerText = total;
+    const total = Object.values(preciosActivos).reduce((a, b) => a + b, 0);
+    const el = document.getElementById('precio-total');
+    if (el) el.innerText = total.toLocaleString('es-ES');
 }
 
 window.cambiarComponente = function (tipo, nombreArchivo, nombreBonito, precio) {
-    // Quitar modelo anterior
     if (piezasActivas[tipo]) {
         if (transformControl.object === piezasActivas[tipo]) transformControl.detach();
         scene.remove(piezasActivas[tipo]);
@@ -216,76 +261,67 @@ window.cambiarComponente = function (tipo, nombreArchivo, nombreBonito, precio) 
     }
 
     preciosActivos[tipo] = precio;
+    archivoActual[tipo]  = nombreArchivo;
     actualizarPrecioTotal();
+    verificarCompatibilidad();
 
-    // Mostrar indicador de carga en el menú
     const elTexto = document.getElementById(`txt-${tipo}`);
-    if (elTexto) elTexto.innerHTML = `<span style="color:#00ffff">⏳ Cargando ${nombreBonito}...</span>`;
+    if (elTexto) elTexto.innerHTML = `<span style="color:#00ffff">⏳ ${nombreBonito}...</span>`;
 
-    loader.load(`models/${nombreArchivo}`, (gltf) => {
-        const model = gltf.scene;
-
-        // ↓↓ AQUÍ está la magia: normalizar el tamaño automáticamente ↓↓
-        const escalaUsada = normalizarModelo(model, tipo);
-
-        // Actualizar params con los valores reales post-normalización
-        params[`${tipo}_Scale`] = escalaUsada;
-        params[`${tipo}_X`]     = model.position.x;
-        params[`${tipo}_Y`]     = model.position.y;
-        params[`${tipo}_Z`]     = model.position.z;
-        params[`${tipo}_RotX`]  = 0;
-        params[`${tipo}_RotY`]  = 0;
-        params[`${tipo}_RotZ`]  = 0;
+    function colocarModelo(model) {
+        const escala = normalizarModelo(model, tipo);
+        params[`${tipo}_Scale`] = escala;
+        params[`${tipo}_X`]    = model.position.x;
+        params[`${tipo}_Y`]    = model.position.y;
+        params[`${tipo}_Z`]    = model.position.z;
+        params[`${tipo}_RotX`] = params[`${tipo}_RotY`] = params[`${tipo}_RotZ`] = 0;
         gui.controllersRecursive().forEach(c => c.updateDisplay());
-
         scene.add(model);
         piezasActivas[tipo] = model;
+        if (elTexto) elTexto.innerHTML = `<strong>${NOMBRES[tipo]}:</strong> ${nombreBonito} &mdash; ${precio.toLocaleString('es-ES')}€`;
+    }
 
-        if (elTexto) elTexto.innerHTML = `<strong>${tipo.toUpperCase()}:</strong> ${nombreBonito} — ${precio}€`;
-
-    }, undefined, (error) => {
-        console.error(`Error cargando ${nombreArchivo}:`, error);
-        if (elTexto) elTexto.innerHTML = `<span style="color:#ef4444">❌ Error cargando ${nombreBonito}</span>`;
-    });
+    loader.load(
+        `models/${nombreArchivo}`,
+        gltf => colocarModelo(gltf.scene),
+        undefined,
+        () => {
+            console.warn(`GLB no encontrado: ${nombreArchivo} → usando placeholder`);
+            colocarModelo(crearPlaceholder(tipo));
+        }
+    );
 };
 
 window.reiniciarPC = function () {
     transformControl.detach();
-    ['caja', 'placa', 'grafica'].forEach(tipo => {
-        if (piezasActivas[tipo]) {
-            scene.remove(piezasActivas[tipo]);
-            piezasActivas[tipo] = null;
-        }
+    TIPOS.forEach(tipo => {
+        if (piezasActivas[tipo]) { scene.remove(piezasActivas[tipo]); piezasActivas[tipo] = null; }
         preciosActivos[tipo] = 0;
-        const elTexto = document.getElementById(`txt-${tipo}`);
-        if (elTexto) elTexto.innerHTML = `<span style="color:#555"><strong>${tipo.toUpperCase()}:</strong> -</span>`;
-
-        // Reset params también
+        archivoActual[tipo]  = null;
         params[`${tipo}_Scale`] = 1;
         params[`${tipo}_X`] = params[`${tipo}_Y`] = params[`${tipo}_Z`] = 0;
         params[`${tipo}_RotX`] = params[`${tipo}_RotY`] = params[`${tipo}_RotZ`] = 0;
+        const el = document.getElementById(`txt-${tipo}`);
+        if (el) el.innerHTML = `<span style="color:#4a6070">${NOMBRES[tipo]}: —</span>`;
     });
     gui.controllersRecursive().forEach(c => c.updateDisplay());
     actualizarPrecioTotal();
+    if (window.onCompatibilidadActualizada) window.onCompatibilidadActualizada([], false);
 };
 
-// Carga Inicial
-cambiarComponente('caja',    'case_corsair.glb', 'Corsair iCUE', 150);
-cambiarComponente('placa',   'mobo_pro.glb',     'ASUS Pro WS',  350);
-cambiarComponente('grafica', 'gpu_4090.glb',     'RTX 40 ROG',  2000);
+// Carga inicial
+cambiarComponente('caja',    'case_corsair.glb', 'Corsair iCUE 4000D',  150);
+cambiarComponente('placa',   'mobo_pro.glb',     'ASUS Pro WS X570',    350);
+cambiarComponente('cpu',     'cpu_5900x.glb',    'Ryzen 9 5900X',       550);
+cambiarComponente('ram',     'ram_ddr4.glb',     'Kingston DDR4 32GB',   90);
+cambiarComponente('grafica', 'gpu_4090.glb',     'RTX 4090',           2000);
 
 // ========================================================
-// 8. BUCLE DE ANIMACIÓN
+// 10. BUCLE DE ANIMACIÓN
 // ========================================================
 function animate() {
     requestAnimationFrame(animate);
-
-    if (transformControl.object) {
-        controls.autoRotate = false;
-    } else {
-        controls.autoRotate = params.autoRotar;
-    }
-
+    controls.autoRotate      = transformControl.object ? false : params.autoRotar;
     controls.autoRotateSpeed = 1.5;
     controls.update();
     renderer.render(scene, camera);
