@@ -1,182 +1,221 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Configurador PC 3D</title>
-    <style>
-        body { margin: 0; overflow: hidden; background-color: #111; font-family: sans-serif; }
-        canvas { display: block; }
-        
-        /* PANTALLA DE CARGA */
-        #pantalla-carga {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0d0d11;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #252525;
-            border-top: 5px solid #00ffff;
-            border-radius: 50%;
-            animation: girar 1s linear infinite;
-        }
-        @keyframes girar {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #texto-carga {
-            color: white;
-            font-family: sans-serif;
-            margin-top: 20px;
-            font-size: 18px;
-            letter-spacing: 1px;
-        }
+<meta charset="UTF-8">
+<title>PC Builder 3D</title>
 
-        /* MENÚ FLOTANTE */
-        #menu {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(20, 20, 20, 0.85);
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
-            width: 240px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            border: 1px solid #333;
-            z-index: 10;
-        }
-        h3 { margin-top: 0; color: #00ffff; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .seccion { margin-bottom: 15px; }
-        .titulo-sec { font-size: 11px; text-transform: uppercase; color: #aaa; margin-bottom: 5px; letter-spacing: 1px; }
-        
-        button {
-            display: block;
-            width: 100%;
-            background: #252525;
-            color: #fff;
-            border: 1px solid #444;
-            padding: 8px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s;
-            font-size: 12px;
-        }
-        button:hover {
-            background: #00ffff;
-            color: #000;
-            font-weight: bold;
-        }
+<style>
 
-        #resumen {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #333;
-            font-size: 13px;
-        }
-        
-        /* Caja del precio total */
-        #total-box {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(0, 255, 136, 0.1);
-            border: 1px solid #00ff88;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-            color: #00ff88;
-        }
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #1e293b, #0f172a, #020617);
+}
 
-        /* INSTRUCCIONES Y BOTÓN DE RESET */
-        #instrucciones {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            text-align: center;
-            color: rgba(0, 255, 255, 0.7);
-            font-size: 14px;
-            pointer-events: none;
-            letter-spacing: 1px;
-            z-index: 5;
-        }
-        .btn-reset {
-            background: #8b0000;
-            margin-top: 15px;
-            border-color: #ff4444;
-            text-align: center;
-            font-weight: bold;
-        }
-        .btn-reset:hover {
-            background: #ff0000;
-            color: white;
-        }
-    </style>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
+/* CANVAS */
+canvas {
+    display: block;
+}
+
+/* LOADING */
+#pantalla-carga {
+    position: fixed;
+    inset: 0;
+    background: #020617;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #1f2937;
+    border-top: 4px solid #00ffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* MENU */
+#menu {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 260px;
+    padding: 15px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+h3 {
+    margin: 0 0 10px 0;
+    color: #00ffff;
+}
+
+/* BOTONES */
+button {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 6px;
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 12px;
+}
+
+button:hover {
+    background: #00ffff;
+    color: black;
+}
+
+/* SECCIONES */
+.seccion {
+    margin-bottom: 12px;
+}
+
+.titulo-sec {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+/* TOTAL */
+#total-box {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(0, 255, 255, 0.08);
+    border: 1px solid #00ffff;
+    text-align: center;
+    color: #00ffff;
+}
+
+/* RESUMEN */
+#resumen {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+/* RESET */
+.btn-reset {
+    margin-top: 10px;
+    background: #7f1d1d;
+    border: 1px solid #ef4444;
+}
+
+.btn-reset:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* INSTRUCCIONES */
+#instrucciones {
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    text-align: center;
+    color: #38bdf8;
+    font-size: 12px;
+}
+
+</style>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+}
+</script>
+
 </head>
+
 <body>
 
-    <div id="instrucciones">💡 Clic izquierdo para rotar | Clic derecho para mover | Rueda para zoom</div>
+<div id="instrucciones">
+💡 Click + arrastrar para mover cámara | Rueda zoom
+</div>
 
-    <div id="pantalla-carga">
-        <div class="spinner"></div>
-        <div id="texto-carga">Cargando componentes 3D...</div>
-    </div>
+<div id="pantalla-carga">
+<div class="spinner"></div>
+<p style="color:white">Cargando PC Builder...</p>
+</div>
 
-    <div id="menu">
-        <h3>PC Builder 3D</h3>
-        
-        <div class="seccion">
-            <div class="titulo-sec">Chasis (Cajas)</div>
-            <button onclick="cambiarComponente('caja', 'case_corsair.glb', 'Corsair iCUE', 150)">Corsair Case (150€)</button>
-            <button onclick="cambiarComponente('caja', 'case_fractal.glb', 'Fractal North', 180)">Fractal Case (180€)</button>
-            <button onclick="cambiarComponente('caja', 'case_nzxt.glb', 'NZXT H9', 200)">NZXT Case (200€)</button>
-        </div>
+<div id="menu">
 
-        <div class="seccion">
-            <div class="titulo-sec">Placa Base</div>
-            <button onclick="cambiarComponente('placa', 'mobo_pro.glb', 'ASUS Pro WS', 350)">Mobo Pro (350€)</button>
-            <button onclick="cambiarComponente('placa', 'mobo_generic.glb', 'Mobo Genérica', 120)">Mobo Generic (120€)</button>
-        </div>
+<h3>PC Builder 3D</h3>
 
-        <div class="seccion">
-            <div class="titulo-sec">Tarjeta Gráfica</div>
-            <button onclick="cambiarComponente('grafica', 'gpu_3090.glb', 'RTX 3090 Ti', 1200)">RTX 3090 (1200€)</button>
-            <button onclick="cambiarComponente('grafica', 'gpu_4090.glb', 'RTX 4090 ROG', 2000)">RTX 4090 (2000€)</button>
-            <button onclick="cambiarComponente('grafica', 'gpu_9070.glb', 'RTX 9070 Pro', 800)">RTX 9070 (800€)</button>
-        </div>
+<div class="seccion">
+<div class="titulo-sec">Caja</div>
 
-        <div id="resumen">
-            <div id="txt-caja" style="color: #aaa;">Caja: -</div>
-            <div id="txt-placa" style="color: #aaa;">Placa: -</div>
-            <div id="txt-grafica" style="color: #aaa;">Gráfica: -</div>
-        </div>
+<button onclick="cambiarComponente('caja','case_corsair.glb','Corsair',150)">
+Corsair Case
+</button>
 
-        <div id="total-box">
-            TOTAL: <strong id="precio-total">0</strong> €
-        </div>
+<button onclick="cambiarComponente('caja','case_fractal.glb','Fractal',180)">
+Fractal Case
+</button>
+</div>
 
-        <button class="btn-reset" onclick="reiniciarPC()">🗑️ Vaciar Configuración</button>
-    </div>
+<div class="seccion">
+<div class="titulo-sec">Placa Base</div>
 
-    <script type="module" src="app.js"></script>
+<button onclick="cambiarComponente('placa','mobo_pro.glb','ASUS Pro',350)">
+ASUS Pro
+</button>
+
+<button onclick="cambiarComponente('placa','mobo_generic.glb','Genérica',120)">
+Genérica
+</button>
+</div>
+
+<div class="seccion">
+<div class="titulo-sec">GPU</div>
+
+<button onclick="cambiarComponente('grafica','gpu_4090.glb','RTX 4090',2000)">
+RTX 4090
+</button>
+
+<button onclick="cambiarComponente('grafica','gpu_3090.glb','RTX 3090',1200)">
+RTX 3090
+</button>
+
+</div>
+
+<div id="resumen">
+<div id="txt-caja">Caja: -</div>
+<div id="txt-placa">Placa: -</div>
+<div id="txt-grafica">GPU: -</div>
+</div>
+
+<div id="total-box">
+TOTAL: <strong id="precio-total">0</strong> €
+</div>
+
+<button class="btn-reset" onclick="reiniciarPC()">
+🗑 Reset PC
+</button>
+
+</div>
+
+<script type="module" src="app.js"></script>
+
 </body>
 </html>
