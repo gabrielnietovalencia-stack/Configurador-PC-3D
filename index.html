@@ -7,309 +7,187 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-    --cyan:   #00ffff;
-    --cyan2:  #00c8c8;
-    --dark:   #080b12;
-    --panel:  rgba(8, 11, 20, 0.92);
-    --border: rgba(0, 255, 255, 0.18);
-    --text:   #c8d8e8;
-    --muted:  #4a6070;
-    --red:    #ef4444;
-    --green:  #22c55e;
+    --cyan:    #00ffff;
+    --cyan2:   #00c8c8;
+    --dark:    #080b12;
+    --panel:   rgba(8, 11, 20, 0.93);
+    --border:  rgba(0, 255, 255, 0.16);
+    --text:    #c8d8e8;
+    --muted:   #4a6070;
+    --red:     #ef4444;
+    --orange:  #f97316;
+    --green:   #22c55e;
+    --yellow:  #eab308;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    overflow: hidden;
-    font-family: 'Rajdhani', sans-serif;
-    background: var(--dark);
-    cursor: crosshair;
-}
-
+body { overflow: hidden; font-family: 'Rajdhani', sans-serif; background: var(--dark); cursor: crosshair; }
 canvas { display: block; }
 
-/* ── LOADING ── */
+/* LOADING */
 #pantalla-carga {
-    position: fixed; inset: 0;
-    background: var(--dark);
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    z-index: 9999;
-    transition: opacity 0.6s;
-    gap: 20px;
+    position: fixed; inset: 0; background: var(--dark);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 9999; transition: opacity 0.6s; gap: 20px;
 }
 .spinner-ring {
-    width: 64px; height: 64px;
-    border: 2px solid var(--border);
+    width: 60px; height: 60px;
+    border: 2px solid rgba(0,255,255,0.1);
     border-top: 2px solid var(--cyan);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 .loading-text {
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: var(--cyan);
-    text-transform: uppercase;
+    font-family: 'Orbitron', monospace; font-size: 10px;
+    letter-spacing: 4px; color: var(--cyan); text-transform: uppercase;
     animation: pulse 1.5s ease-in-out infinite;
 }
-@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+@keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
-/* ── MENÚ IZQUIERDO ── */
+/* MENÚ IZQUIERDO */
 #menu {
-    position: absolute;
-    top: 20px; left: 20px;
-    width: 240px;
-    padding: 0;
+    position: absolute; top: 16px; left: 16px;
+    width: 248px;
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     color: var(--text);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(20px);
     overflow: hidden;
     animation: slideIn 0.5s ease both;
+    max-height: calc(100vh - 32px);
+    display: flex; flex-direction: column;
 }
-@keyframes slideIn {
-    from { opacity: 0; transform: translateX(-20px); }
-    to   { opacity: 1; transform: translateX(0); }
-}
+@keyframes slideIn { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
 
 .menu-header {
     padding: 14px 16px 12px;
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, rgba(0,255,255,0.06), transparent);
+    background: linear-gradient(135deg, rgba(0,255,255,0.05), transparent);
+    flex-shrink: 0;
 }
 .menu-header h3 {
-    font-family: 'Orbitron', monospace;
-    font-size: 13px;
-    font-weight: 900;
-    color: var(--cyan);
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 900;
+    color: var(--cyan); letter-spacing: 2px; text-transform: uppercase;
 }
-.menu-header .subtitle {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    margin-top: 2px;
-}
+.menu-header .subtitle { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; margin-top: 2px; }
 
-.menu-body { padding: 12px; }
+/* SCROLL AREA */
+.menu-scroll { overflow-y: auto; flex: 1; padding: 12px; }
+.menu-scroll::-webkit-scrollbar { width: 3px; }
+.menu-scroll::-webkit-scrollbar-track { background: transparent; }
+.menu-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* ── SECCIONES ── */
-.seccion { margin-bottom: 14px; }
-
+.seccion { margin-bottom: 13px; }
 .titulo-sec {
-    font-family: 'Orbitron', monospace;
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    padding-left: 2px;
+    font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 3px;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 6px; padding-left: 2px;
 }
 
-/* ── BOTONES ── */
 button {
-    width: 100%;
-    padding: 8px 12px;
-    margin-bottom: 5px;
+    width: 100%; padding: 7px 10px; margin-bottom: 4px;
     background: rgba(255,255,255,0.03);
     color: var(--text);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 7px;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: left;
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 7px; cursor: pointer; transition: all 0.15s ease;
+    font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
+    text-align: left; letter-spacing: 0.3px;
+    position: relative; overflow: hidden;
 }
 button::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 2px;
-    background: var(--cyan);
-    opacity: 0;
-    transition: opacity 0.18s;
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: var(--cyan); opacity: 0; transition: opacity 0.15s;
 }
-button:hover {
-    background: rgba(0, 255, 255, 0.08);
-    border-color: rgba(0, 255, 255, 0.35);
-    color: var(--cyan);
-    transform: translateX(3px);
-}
+button:hover { background: rgba(0,255,255,0.07); border-color: rgba(0,255,255,0.3); color: var(--cyan); transform: translateX(2px); }
 button:hover::before { opacity: 1; }
-
-button.activo {
-    background: rgba(0, 255, 255, 0.12);
-    border-color: var(--cyan);
-    color: var(--cyan);
-}
+button.activo { background: rgba(0,255,255,0.10); border-color: rgba(0,255,255,0.5); color: var(--cyan); }
 button.activo::before { opacity: 1; }
 
-/* ── RESUMEN ── */
+/* RESUMEN */
 #resumen {
-    padding: 10px 12px;
-    background: rgba(0,0,0,0.3);
-    border-top: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.8;
-    letter-spacing: 0.3px;
+    padding: 9px 14px; background: rgba(0,0,0,0.3);
+    border-top: 1px solid var(--border); font-size: 11px; color: var(--muted);
+    line-height: 1.9; flex-shrink: 0;
 }
-#resumen span.nombre { color: var(--text); }
 
-/* ── TOTAL ── */
+/* TOTAL */
 #total-box {
-    padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(0,255,255,0.07), rgba(0,200,200,0.03));
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(135deg, rgba(0,255,255,0.06), rgba(0,200,200,0.02));
+    border-top: 1px solid var(--border); flex-shrink: 0;
 }
-.total-label {
-    font-family: 'Orbitron', monospace;
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-}
-#precio-total-wrap {
-    font-family: 'Orbitron', monospace;
-    font-size: 18px;
-    font-weight: 900;
-    color: var(--cyan);
-}
-#precio-total-wrap span { font-size: 12px; margin-left: 2px; color: var(--cyan2); }
+.total-label { font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 3px; color: var(--muted); }
+#precio-total-wrap { font-family: 'Orbitron', monospace; font-size: 17px; font-weight: 900; color: var(--cyan); }
+#precio-total-wrap span { font-size: 11px; margin-left: 1px; color: var(--cyan2); }
 
-/* ── RESET ── */
+/* RESET */
 .btn-reset {
-    width: 100%;
-    padding: 9px;
-    background: rgba(239,68,68,0.08);
-    border: 1px solid rgba(239,68,68,0.25);
-    border-radius: 0 0 12px 12px;
-    color: #f87171;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.18s;
-    text-align: center;
+    width: 100%; padding: 9px;
+    background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 0 0 14px 14px; color: #f87171;
+    font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700;
+    letter-spacing: 1px; cursor: pointer; transition: all 0.15s; text-align: center;
+    flex-shrink: 0;
 }
-.btn-reset:hover {
-    background: rgba(239,68,68,0.18);
-    border-color: var(--red);
-    color: white;
-    transform: none;
-}
+.btn-reset:hover { background: rgba(239,68,68,0.16); border-color: var(--red); color: white; transform: none; }
 
-/* ── PANEL DE SPECS (derecha) ── */
-#panel-specs {
-    position: absolute;
-    top: 20px; right: 20px;
-    width: 220px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    backdrop-filter: blur(16px);
-    overflow: hidden;
-    opacity: 0;
-    transform: translateX(10px);
+/* PANEL COMPATIBILIDAD */
+#panel-compat {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    min-width: 260px; max-width: 500px;
+    background: var(--panel); backdrop-filter: blur(16px);
+    border-radius: 10px; overflow: hidden;
+    opacity: 0; pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
+    transform: translateX(-50%) translateY(6px);
 }
-#panel-specs.visible {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
+#panel-compat.visible {
+    opacity: 1; pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
 }
+.compat-ok  { border: 1px solid rgba(34,197,94,0.4);  }
+.compat-err { border: 1px solid rgba(239,68,68,0.4);  }
+.compat-neu { border: 1px solid rgba(234,179,8,0.35); }
+.compat-inner { padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
+.compat-icon { font-size: 16px; }
+.compat-msgs { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; }
+.compat-msgs .err-line { color: var(--red); }
+.compat-msgs .ok-line  { color: var(--green); }
+.compat-msgs .neu-line { color: var(--yellow); }
+
+/* PANEL SPECS (derecha) */
+#panel-specs {
+    position: absolute; top: 16px; right: 16px; width: 210px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; backdrop-filter: blur(16px); overflow: hidden;
+    opacity: 0; transform: translateX(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease; pointer-events: none;
+}
+#panel-specs.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
 .specs-header {
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, rgba(0,255,255,0.06), transparent);
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(0,255,255,0.05), transparent);
 }
-.specs-tipo {
-    font-family: 'Orbitron', monospace;
-    font-size: 8px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-}
-.specs-nombre {
-    font-family: 'Orbitron', monospace;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--cyan);
-    margin-top: 2px;
-}
-.specs-body { padding: 10px 14px; }
+.specs-tipo { font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 3px; color: var(--muted); }
+.specs-nombre { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; color: var(--cyan); margin-top: 3px; line-height: 1.3; }
+.specs-body { padding: 8px 14px; }
 .spec-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
     font-size: 12px;
 }
 .spec-row:last-child { border-bottom: none; }
-.spec-key { color: var(--muted); letter-spacing: 0.5px; }
+.spec-key { color: var(--muted); }
 .spec-val { color: var(--text); font-weight: 600; }
-.spec-val.highlight { color: var(--cyan); }
+.spec-val.cyan { color: var(--cyan); }
+.spec-val.red  { color: var(--red); }
 
-/* ── INSTRUCCIONES ── */
+/* INSTRUCCIONES */
 #instrucciones {
-    position: absolute;
-    bottom: 16px;
-    width: 100%;
-    text-align: center;
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    pointer-events: none;
+    position: absolute; bottom: 12px; width: 100%; text-align: center;
+    color: var(--muted); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; pointer-events: none;
 }
 #instrucciones span { color: var(--cyan); }
-
-/* ── BADGE DE COMPATIBILIDAD ── */
-#badge-compat {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 5px 14px;
-    border-radius: 20px;
-    font-family: 'Orbitron', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    display: none;
-    animation: fadeUp 0.4s ease;
-}
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-#badge-compat.ok {
-    background: rgba(34,197,94,0.12);
-    border: 1px solid rgba(34,197,94,0.4);
-    color: var(--green);
-    display: block;
-}
-#badge-compat.warn {
-    background: rgba(239,68,68,0.12);
-    border: 1px solid rgba(239,68,68,0.4);
-    color: var(--red);
-    display: block;
-}
 </style>
 <script type="importmap">
 {
@@ -322,7 +200,6 @@ button.activo::before { opacity: 1; }
 </head>
 <body>
 
-<!-- INSTRUCCIONES -->
 <div id="instrucciones">
     <span>Drag</span> to rotate &nbsp;·&nbsp; <span>Scroll</span> to zoom &nbsp;·&nbsp; <span>Right-click</span> to pan
 </div>
@@ -333,45 +210,105 @@ button.activo::before { opacity: 1; }
     <div class="loading-text">Initializing PC Builder</div>
 </div>
 
-<!-- MENÚ IZQUIERDO -->
+<!-- MENÚ -->
 <div id="menu">
     <div class="menu-header">
         <h3>PC Builder 3D</h3>
         <div class="subtitle">Configura tu equipo</div>
     </div>
-    <div class="menu-body">
+
+    <div class="menu-scroll">
+        <!-- CAJA -->
         <div class="seccion">
-            <div class="titulo-sec">Caja</div>
+            <div class="titulo-sec">📦 Caja</div>
             <button id="btn-caja-corsair"
-                onclick="cambiarComponente('caja','case_corsair.glb','Corsair iCUE 4000D',150); marcarActivo('caja','corsair'); mostrarSpecs('caja','Corsair iCUE 4000D',{Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahías:'2x 3.5\" + 4x 2.5\"',Peso:'7.8 kg',Precio:'150€'})">
+                onclick="sel('caja','corsair','case_corsair.glb','Corsair iCUE 4000D',150,
+                    {Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahías:'2×3.5\"+4×2.5\"',Peso:'7.8 kg',Precio:'150€'})">
                 Corsair iCUE 4000D
             </button>
             <button id="btn-caja-fractal"
-                onclick="cambiarComponente('caja','case_fractal.glb','Fractal Design North',180); marcarActivo('caja','fractal'); mostrarSpecs('caja','Fractal Design North',{Formato:'ATX Mid-Tower',Material:'Acero + Madera',Bahías:'2x 3.5\" + 3x 2.5\"',Peso:'8.2 kg',Precio:'180€'})">
+                onclick="sel('caja','fractal','case_fractal.glb','Fractal Design North',180,
+                    {Formato:'ATX Mid-Tower',Material:'Acero + Madera',Bahías:'2×3.5\"+3×2.5\"',Peso:'8.2 kg',Precio:'180€'})">
                 Fractal Design North
             </button>
         </div>
 
+        <!-- PLACA BASE -->
         <div class="seccion">
-            <div class="titulo-sec">Placa Base</div>
-            <button id="btn-placa-asus"
-                onclick="cambiarComponente('placa','mobo_pro.glb','ASUS Pro WS X570',350); marcarActivo('placa','asus'); mostrarSpecs('placa','ASUS Pro WS X570',{Socket:'AM4',Chipset:'X570',RAM:'DDR4 / 128GB Max',PCIe:'3x PCIe 4.0',Precio:'350€'})">
-                ASUS Pro WS X570
+            <div class="titulo-sec">🎛️ Placa Base</div>
+            <button id="btn-placa-x570"
+                onclick="sel('placa','x570','mobo_pro.glb','ASUS Pro WS X570',350,
+                    {Socket:'AM4',Chipset:'X570',RAM:'DDR4 · 128GB',PCIe:'3× PCIe 4.0',Precio:'350€'})">
+                ASUS Pro WS X570 <small style="color:#4a6070"> · AM4 · DDR4</small>
             </button>
-            <button id="btn-placa-generica"
-                onclick="cambiarComponente('placa','mobo_generic.glb','Genérica B550M',120); marcarActivo('placa','generica'); mostrarSpecs('placa','Genérica B550M',{Socket:'AM4',Chipset:'B550',RAM:'DDR4 / 64GB Max',PCIe:'1x PCIe 4.0',Precio:'120€'})">
-                Genérica B550M
+            <button id="btn-placa-b550"
+                onclick="sel('placa','b550','mobo_generic.glb','Genérica B550M',120,
+                    {Socket:'AM4',Chipset:'B550',RAM:'DDR4 · 64GB',PCIe:'1× PCIe 4.0',Precio:'120€'})">
+                Genérica B550M <small style="color:#4a6070"> · AM4 · DDR4</small>
+            </button>
+            <button id="btn-placa-z790"
+                onclick="sel('placa','z790','mobo_z790.glb','MSI MAG Z790',420,
+                    {Socket:'LGA1700',Chipset:'Z790',RAM:'DDR5 · 192GB',PCIe:'2× PCIe 5.0',Precio:'420€'})">
+                MSI MAG Z790 <small style="color:#4a6070"> · LGA1700 · DDR5</small>
+            </button>
+            <button id="btn-placa-b660"
+                onclick="sel('placa','b660','mobo_b660.glb','ASUS B660M Plus',200,
+                    {Socket:'LGA1700',Chipset:'B660',RAM:'DDR4 · 128GB',PCIe:'1× PCIe 5.0',Precio:'200€'})">
+                ASUS B660M Plus <small style="color:#4a6070"> · LGA1700 · DDR4</small>
             </button>
         </div>
 
+        <!-- CPU -->
         <div class="seccion">
-            <div class="titulo-sec">GPU</div>
+            <div class="titulo-sec">🔲 CPU</div>
+            <button id="btn-cpu-5900x"
+                onclick="sel('cpu','5900x','cpu_5900x.glb','Ryzen 9 5900X',550,
+                    {Socket:'AM4',Núcleos:'12C / 24T',Base:'3.7 GHz',Boost:'4.8 GHz',TDP:'105W',Precio:'550€'})">
+                Ryzen 9 5900X <small style="color:#4a6070"> · AM4</small>
+            </button>
+            <button id="btn-cpu-5600x"
+                onclick="sel('cpu','5600x','cpu_5600x.glb','Ryzen 5 5600X',220,
+                    {Socket:'AM4',Núcleos:'6C / 12T',Base:'3.7 GHz',Boost:'4.6 GHz',TDP:'65W',Precio:'220€'})">
+                Ryzen 5 5600X <small style="color:#4a6070"> · AM4</small>
+            </button>
+            <button id="btn-cpu-i9"
+                onclick="sel('cpu','i9','cpu_i9.glb','Core i9-13900K',650,
+                    {Socket:'LGA1700',Núcleos:'24C / 32T',Base:'3.0 GHz',Boost:'5.8 GHz',TDP:'125W',Precio:'650€'})">
+                Core i9-13900K <small style="color:#4a6070"> · LGA1700</small>
+            </button>
+            <button id="btn-cpu-i5"
+                onclick="sel('cpu','i5','cpu_i5.glb','Core i5-13600K',320,
+                    {Socket:'LGA1700',Núcleos:'14C / 20T',Base:'3.5 GHz',Boost:'5.1 GHz',TDP:'125W',Precio:'320€'})">
+                Core i5-13600K <small style="color:#4a6070"> · LGA1700</small>
+            </button>
+        </div>
+
+        <!-- RAM -->
+        <div class="seccion">
+            <div class="titulo-sec">💾 RAM</div>
+            <button id="btn-ram-ddr4"
+                onclick="sel('ram','ddr4','ram_ddr4.glb','Kingston 32GB DDR4',90,
+                    {Tipo:'DDR4',Capacidad:'32 GB (2×16)',Velocidad:'3200 MHz',CAS:'CL16',Precio:'90€'})">
+                Kingston DDR4 32GB <small style="color:#4a6070"> · DDR4</small>
+            </button>
+            <button id="btn-ram-ddr5"
+                onclick="sel('ram','ddr5','ram_ddr5.glb','Corsair 32GB DDR5',160,
+                    {Tipo:'DDR5',Capacidad:'32 GB (2×16)',Velocidad:'6000 MHz',CAS:'CL36',Precio:'160€'})">
+                Corsair 32GB DDR5 <small style="color:#4a6070"> · DDR5</small>
+            </button>
+        </div>
+
+        <!-- GPU -->
+        <div class="seccion">
+            <div class="titulo-sec">🎮 GPU</div>
             <button id="btn-gpu-4090"
-                onclick="cambiarComponente('grafica','gpu_4090.glb','NVIDIA RTX 4090',2000); marcarActivo('gpu','4090'); mostrarSpecs('gpu','NVIDIA RTX 4090',{VRAM:'24 GB GDDR6X',TDP:'450W',CUDA:'16 384 núcleos',Rendimiento:'Extremo',Precio:'2000€'})">
+                onclick="sel('grafica','4090','gpu_4090.glb','NVIDIA RTX 4090',2000,
+                    {VRAM:'24 GB GDDR6X',CUDA:'16 384',TDP:'450W',Rendimiento:'Extremo',Precio:'2000€'})">
                 RTX 4090
             </button>
             <button id="btn-gpu-3090"
-                onclick="cambiarComponente('grafica','gpu_3090.glb','NVIDIA RTX 3090',1200); marcarActivo('gpu','3090'); mostrarSpecs('gpu','NVIDIA RTX 3090',{VRAM:'24 GB GDDR6X',TDP:'350W',CUDA:'10 496 núcleos',Rendimiento:'Alto',Precio:'1200€'})">
+                onclick="sel('grafica','3090','gpu_3090.glb','NVIDIA RTX 3090',1200,
+                    {VRAM:'24 GB GDDR6X',CUDA:'10 496',TDP:'350W',Rendimiento:'Alto',Precio:'1200€'})">
                 RTX 3090
             </button>
         </div>
@@ -379,24 +316,25 @@ button.activo::before { opacity: 1; }
 
     <!-- RESUMEN -->
     <div id="resumen">
-        <div id="txt-caja"  style="color:var(--muted)">CAJA: —</div>
-        <div id="txt-placa" style="color:var(--muted)">PLACA: —</div>
+        <div id="txt-caja"    style="color:var(--muted)">CAJA: —</div>
+        <div id="txt-placa"   style="color:var(--muted)">PLACA: —</div>
+        <div id="txt-cpu"     style="color:var(--muted)">CPU: —</div>
+        <div id="txt-ram"     style="color:var(--muted)">RAM: —</div>
         <div id="txt-grafica" style="color:var(--muted)">GPU: —</div>
     </div>
 
     <!-- TOTAL -->
     <div id="total-box">
-        <div class="total-label">Total</div>
+        <div class="total-label">Total build</div>
         <div id="precio-total-wrap">
-            <span id="precio-total">0</span> <span>€</span>
+            <span id="precio-total">0</span><span>€</span>
         </div>
     </div>
 
-    <!-- RESET -->
-    <button class="btn-reset" onclick="reiniciarPC()">🗑 &nbsp;Reset PC</button>
+    <button class="btn-reset" onclick="reiniciarPC()">🗑 &nbsp;Reset Build</button>
 </div>
 
-<!-- PANEL SPECS DERECHA -->
+<!-- PANEL SPECS -->
 <div id="panel-specs">
     <div class="specs-header">
         <div class="specs-tipo" id="specs-tipo">—</div>
@@ -405,44 +343,89 @@ button.activo::before { opacity: 1; }
     <div class="specs-body" id="specs-body"></div>
 </div>
 
-<!-- BADGE COMPATIBILIDAD -->
-<div id="badge-compat"></div>
+<!-- PANEL COMPATIBILIDAD -->
+<div id="panel-compat">
+    <div class="compat-inner">
+        <div class="compat-icon" id="compat-icon">⚙️</div>
+        <div class="compat-msgs" id="compat-msgs"></div>
+    </div>
+</div>
 
 <script type="module" src="app.js"></script>
 
 <script>
-// ── Marcar botón activo ──
-function marcarActivo(tipo, id) {
-    document.querySelectorAll(`[id^="btn-${tipo}-"]`).forEach(b => b.classList.remove('activo'));
-    const btn = document.getElementById(`btn-${tipo}-${id}`);
+// ── Botón activo ──
+function marcarActivo(prefijo, id) {
+    document.querySelectorAll(`[id^="btn-${prefijo}-"]`).forEach(b => b.classList.remove('activo'));
+    const btn = document.getElementById(`btn-${prefijo}-${id}`);
     if (btn) btn.classList.add('activo');
 }
 
-// ── Mostrar panel de specs ──
+// ── Panel de specs ──
 function mostrarSpecs(tipo, nombre, specs) {
-    const panel = document.getElementById('panel-specs');
-    document.getElementById('specs-tipo').textContent = tipo.toUpperCase();
+    document.getElementById('specs-tipo').textContent   = tipo.toUpperCase();
     document.getElementById('specs-nombre').textContent = nombre;
-
     const body = document.getElementById('specs-body');
-    body.innerHTML = Object.entries(specs).map(([k, v]) =>
-        `<div class="spec-row">
+    body.innerHTML = Object.entries(specs).map(([k, v]) => `
+        <div class="spec-row">
             <span class="spec-key">${k}</span>
-            <span class="spec-val ${k === 'Precio' ? 'highlight' : ''}">${v}</span>
-        </div>`
-    ).join('');
-
-    panel.classList.add('visible');
+            <span class="spec-val ${k==='Precio' ? 'cyan' : ''}">${v}</span>
+        </div>`).join('');
+    document.getElementById('panel-specs').classList.add('visible');
 }
 
-// Marcar los botones iniciales como activos
+// ── Helper combinado ──
+function sel(tipo, id, glb, nombre, precio, specs) {
+    cambiarComponente(tipo, glb, nombre, precio);
+    marcarActivo(tipo, id);
+    mostrarSpecs(tipo, nombre, specs);
+}
+
+// ── Callback de compatibilidad (llamado desde app.js) ──
+window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
+    const panel = document.getElementById('panel-compat');
+    const msgs  = document.getElementById('compat-msgs');
+    const icon  = document.getElementById('compat-icon');
+
+    panel.classList.remove('compat-ok', 'compat-err', 'compat-neu');
+
+    if (errores.length > 0) {
+        panel.classList.add('compat-err', 'visible');
+        icon.textContent = '❌';
+        msgs.innerHTML = errores.map(e => `<div class="err-line">${e}</div>`).join('');
+    } else if (todoSeleccionado) {
+        panel.classList.add('compat-ok', 'visible');
+        icon.textContent  = '✅';
+        msgs.innerHTML    = '<div class="ok-line">Build 100% compatible</div>';
+        // Ocultar tras 3 segundos
+        setTimeout(() => panel.classList.remove('visible'), 3000);
+    } else if (archivoActualTieneAlgo()) {
+        panel.classList.add('compat-neu', 'visible');
+        icon.textContent = '⚠️';
+        msgs.innerHTML   = '<div class="neu-line">Selecciona placa, CPU y RAM</div>';
+    } else {
+        panel.classList.remove('visible');
+    }
+};
+
+function archivoActualTieneAlgo() {
+    // Detectar si hay al menos un componente relevante para compat seleccionado
+    return !!(document.querySelector('[id^="btn-placa-"].activo') ||
+              document.querySelector('[id^="btn-cpu-"].activo') ||
+              document.querySelector('[id^="btn-ram-"].activo'));
+}
+
+// Marcar selección inicial
 window.addEventListener('load', () => {
     setTimeout(() => {
-        marcarActivo('caja', 'corsair');
-        marcarActivo('placa', 'asus');
-        marcarActivo('gpu', '4090');
-        mostrarSpecs('caja','Corsair iCUE 4000D',{Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahías:'2x 3.5" + 4x 2.5"',Peso:'7.8 kg',Precio:'150€'});
-    }, 100);
+        marcarActivo('caja',    'corsair');
+        marcarActivo('placa',   'x570');
+        marcarActivo('cpu',     '5900x');
+        marcarActivo('ram',     'ddr4');
+        marcarActivo('gpu',     '4090');
+        mostrarSpecs('cpu', 'Ryzen 9 5900X',
+            {Socket:'AM4',Núcleos:'12C / 24T',Base:'3.7 GHz',Boost:'4.8 GHz',TDP:'105W',Precio:'550€'});
+    }, 200);
 });
 </script>
 </body>
