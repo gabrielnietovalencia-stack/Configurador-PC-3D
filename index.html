@@ -3,139 +3,314 @@
 <head>
 <meta charset="UTF-8">
 <title>PC Builder 3D</title>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
+:root {
+    --cyan:   #00ffff;
+    --cyan2:  #00c8c8;
+    --dark:   #080b12;
+    --panel:  rgba(8, 11, 20, 0.92);
+    --border: rgba(0, 255, 255, 0.18);
+    --text:   #c8d8e8;
+    --muted:  #4a6070;
+    --red:    #ef4444;
+    --green:  #22c55e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    margin: 0;
     overflow: hidden;
-    font-family: Arial, sans-serif;
-    background: radial-gradient(circle at top, #1e293b, #0f172a, #020617);
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--dark);
+    cursor: crosshair;
 }
 
-/* CANVAS */
-canvas {
-    display: block;
-}
+canvas { display: block; }
 
-/* LOADING */
+/* ── LOADING ── */
 #pantalla-carga {
-    position: fixed;
-    inset: 0;
-    background: #020617;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    position: fixed; inset: 0;
+    background: var(--dark);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
     z-index: 9999;
-    transition: opacity 0.5s;
+    transition: opacity 0.6s;
+    gap: 20px;
 }
-
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid #1f2937;
-    border-top: 4px solid #00ffff;
+.spinner-ring {
+    width: 64px; height: 64px;
+    border: 2px solid var(--border);
+    border-top: 2px solid var(--cyan);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin 0.8s linear infinite;
 }
-
-@keyframes spin {
-    100% { transform: rotate(360deg); }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.loading-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    animation: pulse 1.5s ease-in-out infinite;
 }
+@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
 
-/* MENU */
+/* ── MENÚ IZQUIERDO ── */
 #menu {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    width: 260px;
-    padding: 15px;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid #334155;
+    top: 20px; left: 20px;
+    width: 240px;
+    padding: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
     border-radius: 12px;
-    color: white;
-    backdrop-filter: blur(10px);
+    color: var(--text);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    animation: slideIn 0.5s ease both;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
 }
 
-h3 {
-    margin: 0 0 10px 0;
-    color: #00ffff;
+.menu-header {
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(0,255,255,0.06), transparent);
 }
-
-/* BOTONES */
-button {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 6px;
-    background: #1e293b;
-    color: white;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-size: 12px;
-}
-
-button:hover {
-    background: #00ffff;
-    color: black;
-}
-
-/* SECCIONES */
-.seccion {
-    margin-bottom: 12px;
-}
-
-.titulo-sec {
-    font-size: 11px;
-    color: #94a3b8;
-    margin-bottom: 5px;
+.menu-header h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--cyan);
+    letter-spacing: 2px;
     text-transform: uppercase;
 }
+.menu-header .subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
 
-/* TOTAL */
-#total-box {
-    margin-top: 12px;
-    padding: 10px;
-    border-radius: 10px;
+.menu-body { padding: 12px; }
+
+/* ── SECCIONES ── */
+.seccion { margin-bottom: 14px; }
+
+.titulo-sec {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    padding-left: 2px;
+}
+
+/* ── BOTONES ── */
+button {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+button::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--cyan);
+    opacity: 0;
+    transition: opacity 0.18s;
+}
+button:hover {
     background: rgba(0, 255, 255, 0.08);
-    border: 1px solid #00ffff;
-    text-align: center;
-    color: #00ffff;
+    border-color: rgba(0, 255, 255, 0.35);
+    color: var(--cyan);
+    transform: translateX(3px);
 }
+button:hover::before { opacity: 1; }
 
-/* RESUMEN */
+button.activo {
+    background: rgba(0, 255, 255, 0.12);
+    border-color: var(--cyan);
+    color: var(--cyan);
+}
+button.activo::before { opacity: 1; }
+
+/* ── RESUMEN ── */
 #resumen {
-    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.3);
+    border-top: 1px solid var(--border);
     font-size: 12px;
-    color: #cbd5e1;
+    color: var(--muted);
+    line-height: 1.8;
+    letter-spacing: 0.3px;
 }
+#resumen span.nombre { color: var(--text); }
 
-/* RESET */
+/* ── TOTAL ── */
+#total-box {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(0,255,255,0.07), rgba(0,200,200,0.03));
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.total-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+#precio-total-wrap {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--cyan);
+}
+#precio-total-wrap span { font-size: 12px; margin-left: 2px; color: var(--cyan2); }
+
+/* ── RESET ── */
 .btn-reset {
-    margin-top: 10px;
-    background: #7f1d1d;
-    border: 1px solid #ef4444;
+    width: 100%;
+    padding: 9px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 0 0 12px 12px;
+    color: #f87171;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
 }
-
 .btn-reset:hover {
-    background: #ef4444;
+    background: rgba(239,68,68,0.18);
+    border-color: var(--red);
     color: white;
+    transform: none;
 }
 
-/* INSTRUCCIONES */
+/* ── PANEL DE SPECS (derecha) ── */
+#panel-specs {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 220px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+#panel-specs.visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+.specs-header {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(0,255,255,0.06), transparent);
+}
+.specs-tipo {
+    font-family: 'Orbitron', monospace;
+    font-size: 8px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+.specs-nombre {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-top: 2px;
+}
+.specs-body { padding: 10px 14px; }
+.spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 12px;
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-key { color: var(--muted); letter-spacing: 0.5px; }
+.spec-val { color: var(--text); font-weight: 600; }
+.spec-val.highlight { color: var(--cyan); }
+
+/* ── INSTRUCCIONES ── */
 #instrucciones {
     position: absolute;
-    bottom: 15px;
+    bottom: 16px;
     width: 100%;
     text-align: center;
-    color: #38bdf8;
-    font-size: 12px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    pointer-events: none;
 }
+#instrucciones span { color: var(--cyan); }
 
+/* ── BADGE DE COMPATIBILIDAD ── */
+#badge-compat {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    display: none;
+    animation: fadeUp 0.4s ease;
+}
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+#badge-compat.ok {
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.4);
+    color: var(--green);
+    display: block;
+}
+#badge-compat.warn {
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: var(--red);
+    display: block;
+}
 </style>
-
 <script type="importmap">
 {
     "imports": {
@@ -144,78 +319,131 @@ button:hover {
     }
 }
 </script>
-
 </head>
-
 <body>
 
+<!-- INSTRUCCIONES -->
 <div id="instrucciones">
-💡 Click + arrastrar para mover cámara | Rueda zoom
+    <span>Drag</span> to rotate &nbsp;·&nbsp; <span>Scroll</span> to zoom &nbsp;·&nbsp; <span>Right-click</span> to pan
 </div>
 
+<!-- LOADING -->
 <div id="pantalla-carga">
-<div class="spinner"></div>
-<p style="color:white">Cargando PC Builder...</p>
+    <div class="spinner-ring"></div>
+    <div class="loading-text">Initializing PC Builder</div>
 </div>
 
+<!-- MENÚ IZQUIERDO -->
 <div id="menu">
+    <div class="menu-header">
+        <h3>PC Builder 3D</h3>
+        <div class="subtitle">Configura tu equipo</div>
+    </div>
+    <div class="menu-body">
+        <div class="seccion">
+            <div class="titulo-sec">Caja</div>
+            <button id="btn-caja-corsair"
+                onclick="cambiarComponente('caja','case_corsair.glb','Corsair iCUE 4000D',150); marcarActivo('caja','corsair'); mostrarSpecs('caja','Corsair iCUE 4000D',{Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahías:'2x 3.5\" + 4x 2.5\"',Peso:'7.8 kg',Precio:'150€'})">
+                Corsair iCUE 4000D
+            </button>
+            <button id="btn-caja-fractal"
+                onclick="cambiarComponente('caja','case_fractal.glb','Fractal Design North',180); marcarActivo('caja','fractal'); mostrarSpecs('caja','Fractal Design North',{Formato:'ATX Mid-Tower',Material:'Acero + Madera',Bahías:'2x 3.5\" + 3x 2.5\"',Peso:'8.2 kg',Precio:'180€'})">
+                Fractal Design North
+            </button>
+        </div>
 
-<h3>PC Builder 3D</h3>
+        <div class="seccion">
+            <div class="titulo-sec">Placa Base</div>
+            <button id="btn-placa-asus"
+                onclick="cambiarComponente('placa','mobo_pro.glb','ASUS Pro WS X570',350); marcarActivo('placa','asus'); mostrarSpecs('placa','ASUS Pro WS X570',{Socket:'AM4',Chipset:'X570',RAM:'DDR4 / 128GB Max',PCIe:'3x PCIe 4.0',Precio:'350€'})">
+                ASUS Pro WS X570
+            </button>
+            <button id="btn-placa-generica"
+                onclick="cambiarComponente('placa','mobo_generic.glb','Genérica B550M',120); marcarActivo('placa','generica'); mostrarSpecs('placa','Genérica B550M',{Socket:'AM4',Chipset:'B550',RAM:'DDR4 / 64GB Max',PCIe:'1x PCIe 4.0',Precio:'120€'})">
+                Genérica B550M
+            </button>
+        </div>
 
-<div class="seccion">
-<div class="titulo-sec">Caja</div>
+        <div class="seccion">
+            <div class="titulo-sec">GPU</div>
+            <button id="btn-gpu-4090"
+                onclick="cambiarComponente('grafica','gpu_4090.glb','NVIDIA RTX 4090',2000); marcarActivo('gpu','4090'); mostrarSpecs('gpu','NVIDIA RTX 4090',{VRAM:'24 GB GDDR6X',TDP:'450W',CUDA:'16 384 núcleos',Rendimiento:'Extremo',Precio:'2000€'})">
+                RTX 4090
+            </button>
+            <button id="btn-gpu-3090"
+                onclick="cambiarComponente('grafica','gpu_3090.glb','NVIDIA RTX 3090',1200); marcarActivo('gpu','3090'); mostrarSpecs('gpu','NVIDIA RTX 3090',{VRAM:'24 GB GDDR6X',TDP:'350W',CUDA:'10 496 núcleos',Rendimiento:'Alto',Precio:'1200€'})">
+                RTX 3090
+            </button>
+        </div>
+    </div>
 
-<button onclick="cambiarComponente('caja','case_corsair.glb','Corsair',150)">
-Corsair Case
-</button>
+    <!-- RESUMEN -->
+    <div id="resumen">
+        <div id="txt-caja"  style="color:var(--muted)">CAJA: —</div>
+        <div id="txt-placa" style="color:var(--muted)">PLACA: —</div>
+        <div id="txt-grafica" style="color:var(--muted)">GPU: —</div>
+    </div>
 
-<button onclick="cambiarComponente('caja','case_fractal.glb','Fractal',180)">
-Fractal Case
-</button>
+    <!-- TOTAL -->
+    <div id="total-box">
+        <div class="total-label">Total</div>
+        <div id="precio-total-wrap">
+            <span id="precio-total">0</span> <span>€</span>
+        </div>
+    </div>
+
+    <!-- RESET -->
+    <button class="btn-reset" onclick="reiniciarPC()">🗑 &nbsp;Reset PC</button>
 </div>
 
-<div class="seccion">
-<div class="titulo-sec">Placa Base</div>
-
-<button onclick="cambiarComponente('placa','mobo_pro.glb','ASUS Pro',350)">
-ASUS Pro
-</button>
-
-<button onclick="cambiarComponente('placa','mobo_generic.glb','Genérica',120)">
-Genérica
-</button>
+<!-- PANEL SPECS DERECHA -->
+<div id="panel-specs">
+    <div class="specs-header">
+        <div class="specs-tipo" id="specs-tipo">—</div>
+        <div class="specs-nombre" id="specs-nombre">—</div>
+    </div>
+    <div class="specs-body" id="specs-body"></div>
 </div>
 
-<div class="seccion">
-<div class="titulo-sec">GPU</div>
-
-<button onclick="cambiarComponente('grafica','gpu_4090.glb','RTX 4090',2000)">
-RTX 4090
-</button>
-
-<button onclick="cambiarComponente('grafica','gpu_3090.glb','RTX 3090',1200)">
-RTX 3090
-</button>
-
-</div>
-
-<div id="resumen">
-<div id="txt-caja">Caja: -</div>
-<div id="txt-placa">Placa: -</div>
-<div id="txt-grafica">GPU: -</div>
-</div>
-
-<div id="total-box">
-TOTAL: <strong id="precio-total">0</strong> €
-</div>
-
-<button class="btn-reset" onclick="reiniciarPC()">
-🗑 Reset PC
-</button>
-
-</div>
+<!-- BADGE COMPATIBILIDAD -->
+<div id="badge-compat"></div>
 
 <script type="module" src="app.js"></script>
 
+<script>
+// ── Marcar botón activo ──
+function marcarActivo(tipo, id) {
+    document.querySelectorAll(`[id^="btn-${tipo}-"]`).forEach(b => b.classList.remove('activo'));
+    const btn = document.getElementById(`btn-${tipo}-${id}`);
+    if (btn) btn.classList.add('activo');
+}
+
+// ── Mostrar panel de specs ──
+function mostrarSpecs(tipo, nombre, specs) {
+    const panel = document.getElementById('panel-specs');
+    document.getElementById('specs-tipo').textContent = tipo.toUpperCase();
+    document.getElementById('specs-nombre').textContent = nombre;
+
+    const body = document.getElementById('specs-body');
+    body.innerHTML = Object.entries(specs).map(([k, v]) =>
+        `<div class="spec-row">
+            <span class="spec-key">${k}</span>
+            <span class="spec-val ${k === 'Precio' ? 'highlight' : ''}">${v}</span>
+        </div>`
+    ).join('');
+
+    panel.classList.add('visible');
+}
+
+// Marcar los botones iniciales como activos
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        marcarActivo('caja', 'corsair');
+        marcarActivo('placa', 'asus');
+        marcarActivo('gpu', '4090');
+        mostrarSpecs('caja','Corsair iCUE 4000D',{Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahías:'2x 3.5" + 4x 2.5"',Peso:'7.8 kg',Precio:'150€'});
+    }, 100);
+});
+</script>
 </body>
 </html>
