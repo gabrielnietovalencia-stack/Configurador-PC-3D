@@ -1,1 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PC Builder 3D — Configura tu PC Perfecto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --fuchsia:  #e040fb;
+    --purple:   #a855f7;
+    --cyan:     #00ffff;
+    --dark:     #060810;
+    --darker:   #03040a;
+    --text:     #e8eaf0;
+    --muted:    #6b7280;
+}
 
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    height: 100%; overflow-x: hidden;
+    font-family: 'Rajdhani', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+}
+
+/* ── DOT PATTERN BACKGROUND ── */
+body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+}
+
+/* ── GLOW BLOBS ── */
+.blob {
+    position: fixed; border-radius: 50%;
+    filter: blur(120px); opacity: 0.18; pointer-events: none; z-index: 0;
+}
+.blob-1 { width: 600px; height: 600px; background: var(--purple); top: -200px; left: -150px; }
+.blob-2 { width: 500px; height: 500px; background: var(--fuchsia); bottom: -150px; right: -100px; }
+.blob-3 { width: 300px; height: 300px; background: var(--cyan); top: 40%; left: 50%; transform: translate(-50%,-50%); }
+
+/* ── NAV ── */
+nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 0 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+    background: rgba(6,8,16,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.nav-logo {
+    font-family: 'Orbitron', monospace; font-size: 14px; font-weight: 900;
+    letter-spacing: 3px; color: white;
+    display: flex; align-items: center; gap: 10px;
+}
+.nav-logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--fuchsia); box-shadow: 0 0 12px var(--fuchsia); }
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+    font-size: 13px; font-weight: 600; letter-spacing: 1px;
+    color: var(--muted); text-decoration: none; text-transform: uppercase;
+    transition: color 0.2s;
+}
+.nav-links a:hover { color: white; }
+.nav-cta {
+    padding: 8px 22px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--fuchsia), var(--purple));
+    color: white; font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    box-shadow: 0 0 20px rgba(224, 64, 251, 0.35);
+    transition: all 0.2s;
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(224, 64, 251, 0.55); }
+
+/* ── HERO ── */
+.hero {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 64px 60px 0;
+    overflow: hidden;
+}
+.hero-content {
+    flex: 0 0 50%;
+    max-width: 580px;
+    animation: fadeUp 0.8s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 14px; border-radius: 20px; margin-bottom: 24px;
+    border: 1px solid rgba(224,64,251,0.35);
+    background: rgba(224,64,251,0.08);
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    color: var(--fuchsia); text-transform: uppercase;
+}
+.hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--fuchsia); animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:0.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.2)} }
+
+.hero-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    color: white;
+}
+.hero-title .highlight {
+    background: linear-gradient(90deg, var(--fuchsia), var(--purple), var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 18px; font-weight: 400; line-height: 1.6;
+    color: var(--muted); margin-bottom: 36px; max-width: 460px;
+}
+.hero-subtitle strong { color: var(--text); font-weight: 600; }
+
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+
+.btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 32px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--fuchsia), var(--purple));
+    color: white; font-family: 'Rajdhani', sans-serif;
+    font-size: 15px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    text-decoration: none; border: none; cursor: pointer;
+    box-shadow: 0 0 30px rgba(224, 64, 251, 0.4), 0 4px 20px rgba(0,0,0,0.4);
+    transition: all 0.25s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(224, 64, 251, 0.6), 0 8px 30px rgba(0,0,0,0.5); }
+.btn-primary .arrow { font-size: 18px; transition: transform 0.2s; }
+.btn-primary:hover .arrow { transform: translateX(4px); }
+
+.btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 28px; border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text); font-family: 'Rajdhani', sans-serif;
+    font-size: 15px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.25); }
+
+/* Stats */
+.hero-stats { display: flex; gap: 32px; }
+.stat { }
+.stat-num {
+    font-family: 'Orbitron', monospace; font-size: 24px; font-weight: 900;
+    color: white; line-height: 1;
+}
+.stat-num span { color: var(--fuchsia); }
+.stat-label { font-size: 12px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; text-transform: uppercase; }
+
+/* ── FLOATING COMPONENTS ── */
+.hero-visual {
+    flex: 1; position: relative; height: 600px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.component-card {
+    position: absolute;
+    background: rgba(15, 18, 30, 0.8);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+    padding: 12px;
+    transition: transform 0.3s ease;
+}
+.component-card:hover { transform: scale(1.05) !important; }
+
+/* MOTHERBOARD */
+.card-mobo {
+    width: 200px; height: 200px;
+    border: 1px solid rgba(0,255,255,0.2);
+    top: 30px; left: 40px;
+    animation: float1 6s ease-in-out infinite;
+    transform: rotate(-8deg);
+}
+@keyframes float1 {
+    0%,100% { transform: rotate(-8deg) translateY(0); }
+    50%      { transform: rotate(-8deg) translateY(-18px); }
+}
+
+/* GPU */
+.card-gpu {
+    width: 240px; height: 95px;
+    border: 1px solid rgba(168,85,247,0.3);
+    top: 200px; right: 10px;
+    animation: float2 7s ease-in-out infinite;
+    transform: rotate(5deg);
+}
+@keyframes float2 {
+    0%,100% { transform: rotate(5deg) translateY(0); }
+    50%      { transform: rotate(5deg) translateY(-22px); }
+}
+
+/* RAM */
+.card-ram {
+    width: 52px; height: 150px;
+    border: 1px solid rgba(34,197,94,0.3);
+    bottom: 80px; left: 80px;
+    animation: float3 5.5s ease-in-out infinite;
+    transform: rotate(12deg);
+}
+@keyframes float3 {
+    0%,100% { transform: rotate(12deg) translateY(0); }
+    50%      { transform: rotate(12deg) translateY(-14px); }
+}
+
+/* CPU */
+.card-cpu {
+    width: 130px; height: 130px;
+    border: 1px solid rgba(224,64,251,0.3);
+    top: 120px; left: 180px;
+    animation: float4 8s ease-in-out infinite;
+    transform: rotate(-3deg);
+}
+@keyframes float4 {
+    0%,100% { transform: rotate(-3deg) translateY(0); }
+    50%      { transform: rotate(-3deg) translateY(-20px); }
+}
+
+/* Fan */
+.card-fan {
+    width: 100px; height: 100px;
+    border: 1px solid rgba(0,255,255,0.2);
+    bottom: 70px; right: 60px;
+    animation: float5 6.5s ease-in-out infinite;
+    transform: rotate(15deg);
+    display: flex; align-items: center; justify-content: center;
+}
+@keyframes float5 {
+    0%,100% { transform: rotate(15deg) translateY(0); }
+    50%      { transform: rotate(15deg) translateY(-12px); }
+}
+.fan-inner { animation: spin 3s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── FEATURES SECTION ── */
+.features {
+    position: relative; z-index: 1;
+    padding: 80px 60px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.feature-card {
+    padding: 28px 24px;
+    background: rgba(15, 18, 30, 0.7);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    cursor: default;
+}
+.feature-card:hover {
+    border-color: rgba(224,64,251,0.3);
+    background: rgba(224,64,251,0.05);
+    transform: translateY(-4px);
+}
+.feature-icon {
+    width: 48px; height: 48px; border-radius: 12px; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+}
+.icon-purple { background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); }
+.icon-cyan   { background: rgba(0,255,255,0.1);   border: 1px solid rgba(0,255,255,0.25); }
+.icon-green  { background: rgba(34,197,94,0.1);   border: 1px solid rgba(34,197,94,0.25); }
+.feature-title { font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; letter-spacing: 2px; color: white; margin-bottom: 8px; text-transform: uppercase; }
+.feature-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* ── FOOTER ── */
+footer {
+    position: relative; z-index: 1;
+    padding: 24px 60px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--muted);
+}
+footer .logo-small { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.3); }
+
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo">
+        <div class="dot"></div>
+        PC BUILDER 3D
+    </div>
+    <div class="nav-links">
+        <a href="#">Inicio</a>
+        <a href="#">Componentes</a>
+        <a href="#">Compatibilidad</a>
+    </div>
+    <a href="index.html" class="nav-cta">Configurar PC</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">
+            <span></span> Nuevo — Versión 1.0
+        </div>
+
+        <h1 class="hero-title">
+            Construye tu<br>
+            <span class="highlight">PC Perfecto</span><br>
+            en 3D
+        </h1>
+
+        <p class="hero-subtitle">
+            Selecciona componentes, comprueba la <strong>compatibilidad en tiempo real</strong>
+            y visualiza tu build completo en un entorno 3D interactivo.
+        </p>
+
+        <div class="hero-btns">
+            <a href="index.html" class="btn-primary">
+                Empezar a construir
+                <span class="arrow">→</span>
+            </a>
+            <a href="#features" class="btn-secondary">
+                Ver características
+            </a>
+        </div>
+
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-num">5<span>+</span></div>
+                <div class="stat-label">Componentes</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">100<span>%</span></div>
+                <div class="stat-label">Compatibilidad</div>
+            </div>
+            <div class="stat">
+                <div class="stat-num">3<span>D</span></div>
+                <div class="stat-label">Visualización</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING COMPONENTS -->
+    <div class="hero-visual">
+
+        <!-- MOTHERBOARD -->
+        <div class="component-card card-mobo">
+            <svg width="176" height="176" viewBox="0 0 176 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- PCB base -->
+                <rect width="176" height="176" rx="6" fill="#1a2a1a"/>
+                <rect x="2" y="2" width="172" height="172" rx="5" stroke="#2a4a2a" stroke-width="1"/>
+                <!-- Mounting holes -->
+                <circle cx="10" cy="10" r="4" fill="#0f1a0f" stroke="#1e3a1e"/>
+                <circle cx="166" cy="10" r="4" fill="#0f1a0f" stroke="#1e3a1e"/>
+                <circle cx="10" cy="166" r="4" fill="#0f1a0f" stroke="#1e3a1e"/>
+                <circle cx="166" cy="166" r="4" fill="#0f1a0f" stroke="#1e3a1e"/>
+                <!-- CPU socket area -->
+                <rect x="20" y="20" width="70" height="70" rx="2" fill="#0f1a0f" stroke="#00ffff" stroke-width="0.8"/>
+                <rect x="28" y="28" width="54" height="54" rx="1" fill="#111" stroke="#222" stroke-width="0.5"/>
+                <!-- CPU socket pins pattern -->
+                <g fill="#2a4a2a">
+                    <rect x="32" y="32" width="2" height="2"/><rect x="37" y="32" width="2" height="2"/><rect x="42" y="32" width="2" height="2"/>
+                    <rect x="47" y="32" width="2" height="2"/><rect x="52" y="32" width="2" height="2"/><rect x="57" y="32" width="2" height="2"/>
+                    <rect x="32" y="37" width="2" height="2"/><rect x="42" y="37" width="2" height="2"/><rect x="52" y="37" width="2" height="2"/>
+                    <rect x="32" y="42" width="2" height="2"/><rect x="37" y="42" width="2" height="2"/><rect x="47" y="42" width="2" height="2"/>
+                    <rect x="57" y="42" width="2" height="2"/><rect x="62" y="42" width="2" height="2"/><rect x="67" y="42" width="2" height="2"/>
+                    <rect x="32" y="47" width="2" height="2"/><rect x="42" y="47" width="2" height="2"/><rect x="52" y="47" width="2" height="2"/>
+                    <rect x="62" y="47" width="2" height="2"/><rect x="32" y="52" width="2" height="2"/>
+                    <rect x="37" y="52" width="2" height="2"/><rect x="47" y="52" width="2" height="2"/><rect x="57" y="52" width="2" height="2"/>
+                    <rect x="67" y="52" width="2" height="2"/><rect x="32" y="57" width="2" height="2"/>
+                    <rect x="42" y="57" width="2" height="2"/><rect x="52" y="57" width="2" height="2"/><rect x="62" y="57" width="2" height="2"/>
+                    <rect x="37" y="62" width="2" height="2"/><rect x="47" y="62" width="2" height="2"/>
+                    <rect x="57" y="62" width="2" height="2"/><rect x="67" y="62" width="2" height="2"/>
+                    <rect x="32" y="67" width="2" height="2"/><rect x="42" y="67" width="2" height="2"/><rect x="52" y="67" width="2" height="2"/>
+                </g>
+                <!-- RAM slots -->
+                <rect x="100" y="18" width="14" height="60" rx="1" fill="#0a180a" stroke="#00ffff" stroke-width="0.6"/>
+                <rect x="120" y="18" width="14" height="60" rx="1" fill="#0a180a" stroke="#1e3a1e" stroke-width="0.6"/>
+                <rect x="140" y="18" width="14" height="60" rx="1" fill="#0a180a" stroke="#1e3a1e" stroke-width="0.6"/>
+                <!-- PCIe slots -->
+                <rect x="20" y="100" width="140" height="10" rx="1" fill="#0a120a" stroke="#00ffff" stroke-width="0.7"/>
+                <rect x="20" y="118" width="80" height="8" rx="1" fill="#0a120a" stroke="#1e3a1e" stroke-width="0.5"/>
+                <rect x="20" y="132" width="140" height="10" rx="1" fill="#0a120a" stroke="#1e3a1e" stroke-width="0.5"/>
+                <!-- Chipset -->
+                <rect x="108" y="80" width="30" height="30" rx="2" fill="#111f11" stroke="#2a4a2a"/>
+                <text x="123" y="99" font-size="6" fill="#3a6a3a" text-anchor="middle" font-family="monospace">X570</text>
+                <!-- Capacitors -->
+                <circle cx="95" cy="100" r="4" fill="#1a1a2a" stroke="#2a2a4a"/>
+                <circle cx="88" cy="108" r="4" fill="#1a1a2a" stroke="#2a2a4a"/>
+                <circle cx="95" cy="116" r="4" fill="#1a1a2a" stroke="#2a2a4a"/>
+                <!-- IO ports area -->
+                <rect x="2" y="145" width="25" height="29" rx="1" fill="#0f150f" stroke="#2a3a2a"/>
+                <rect x="5" y="148" width="19" height="5" rx="0.5" fill="#1a2a1a"/>
+                <rect x="5" y="155" width="19" height="5" rx="0.5" fill="#1a2a1a"/>
+                <rect x="5" y="162" width="9" height="9" rx="0.5" fill="#1a2a1a"/>
+                <rect x="16" y="162" width="8" height="9" rx="0.5" fill="#1a2a1a"/>
+                <!-- Traces -->
+                <line x1="55" y1="90" x2="55" y2="105" stroke="#1e3a1e" stroke-width="0.7"/>
+                <line x1="55" y1="105" x2="108" y2="105" stroke="#1e3a1e" stroke-width="0.7"/>
+                <line x1="90" y1="55" x2="100" y2="55" stroke="#1e3a1e" stroke-width="0.7"/>
+                <line x1="90" y1="40" x2="100" y2="40" stroke="#1e3a1e" stroke-width="0.7"/>
+            </svg>
+        </div>
+
+        <!-- GPU -->
+        <div class="component-card card-gpu">
+            <svg width="216" height="71" viewBox="0 0 216 71" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- PCB -->
+                <rect width="216" height="71" rx="4" fill="#0f0f14"/>
+                <rect x="1" y="1" width="214" height="69" rx="3" stroke="#2a2a3a" stroke-width="0.8"/>
+                <!-- Main chip -->
+                <rect x="80" y="10" width="50" height="50" rx="3" fill="#1a1a22" stroke="#a855f7" stroke-width="0.8"/>
+                <rect x="88" y="18" width="34" height="34" rx="2" fill="#222228" stroke="#333"/>
+                <text x="105" y="38" font-size="7" fill="#a855f7" text-anchor="middle" font-family="monospace" font-weight="bold">GPU</text>
+                <!-- Fan circles -->
+                <circle cx="28" cy="35" r="22" fill="#16161e" stroke="#333" stroke-width="1"/>
+                <circle cx="28" cy="35" r="16" fill="#1a1a22" stroke="#a855f7" stroke-width="0.5" stroke-dasharray="3 2"/>
+                <circle cx="28" cy="35" r="6" fill="#222228" stroke="#444"/>
+                <!-- Fan blades -->
+                <path d="M28 19 Q34 27 28 35 Q22 27 28 19Z" fill="#2a2a38" opacity="0.9"/>
+                <path d="M44 35 Q36 41 28 35 Q36 29 44 35Z" fill="#2a2a38" opacity="0.9"/>
+                <path d="M28 51 Q22 43 28 35 Q34 43 28 51Z" fill="#2a2a38" opacity="0.9"/>
+                <path d="M12 35 Q20 29 28 35 Q20 41 12 35Z" fill="#2a2a38" opacity="0.9"/>
+                <!-- Heatsink lines -->
+                <line x1="55" y1="5" x2="55" y2="65" stroke="#222" stroke-width="1.5"/>
+                <line x1="60" y1="5" x2="60" y2="65" stroke="#222" stroke-width="1.5"/>
+                <line x1="65" y1="5" x2="65" y2="65" stroke="#222" stroke-width="1.5"/>
+                <line x1="70" y1="5" x2="70" y2="65" stroke="#222" stroke-width="1.5"/>
+                <line x1="75" y1="5" x2="75" y2="65" stroke="#222" stroke-width="1.5"/>
+                <!-- VRAM chips -->
+                <rect x="140" y="15" width="14" height="10" rx="1" fill="#1a1a22" stroke="#333"/>
+                <rect x="158" y="15" width="14" height="10" rx="1" fill="#1a1a22" stroke="#333"/>
+                <rect x="176" y="15" width="14" height="10" rx="1" fill="#1a1a22" stroke="#333"/>
+                <rect x="194" y="15" width="14" height="10" rx="1" fill="#1a1a22" stroke="#333"/>
+                <rect x="140" y="45" width="14" height="10" rx="1" fill="#1a1a22" stroke="#333"/>
+                <rect x="158" y="45" width="14" height="10" rx="1" fill="#1a1a22" stroke="#333"/>
+                <rect x="176" y="45" width="14" height="10" rx="1" fill="#1a1a22" stroke="#333"/>
+                <rect x="194" y="45" width="14" height="10" rx="1" fill="#1a1a22" stroke="#333"/>
+                <!-- Power connector -->
+                <rect x="140" y="29" width="20" height="12" rx="1" fill="#111118" stroke="#555"/>
+                <rect x="162" y="29" width="20" height="12" rx="1" fill="#111118" stroke="#555"/>
+                <!-- PCIe connector bottom -->
+                <rect x="15" y="62" width="150" height="7" rx="0" fill="#0a0a10"/>
+                <g fill="#ffd700" opacity="0.6">
+                    <rect x="20" y="63" width="1.5" height="5"/><rect x="23.5" y="63" width="1.5" height="5"/>
+                    <rect x="27" y="63" width="1.5" height="5"/><rect x="30.5" y="63" width="1.5" height="5"/>
+                    <rect x="34" y="63" width="1.5" height="5"/><rect x="37.5" y="63" width="1.5" height="5"/>
+                    <rect x="41" y="63" width="1.5" height="5"/><rect x="44.5" y="63" width="1.5" height="5"/>
+                    <rect x="48" y="63" width="1.5" height="5"/><rect x="51.5" y="63" width="1.5" height="5"/>
+                    <rect x="55" y="63" width="1.5" height="5"/><rect x="58.5" y="63" width="1.5" height="5"/>
+                    <rect x="62" y="63" width="1.5" height="5"/><rect x="65.5" y="63" width="1.5" height="5"/>
+                    <rect x="69" y="63" width="1.5" height="5"/><rect x="72.5" y="63" width="1.5" height="5"/>
+                    <rect x="76" y="63" width="1.5" height="5"/><rect x="79.5" y="63" width="1.5" height="5"/>
+                    <rect x="83" y="63" width="1.5" height="5"/><rect x="86.5" y="63" width="1.5" height="5"/>
+                </g>
+            </svg>
+        </div>
+
+        <!-- CPU -->
+        <div class="component-card card-cpu">
+            <svg width="106" height="106" viewBox="0 0 106 106" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- PCB / substrate teal (Intel style) -->
+                <rect width="106" height="106" rx="4" fill="#004a5a"/>
+                <!-- Circuit traces -->
+                <line x1="0" y1="20" x2="10" y2="20" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="0" y1="30" x2="10" y2="30" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="0" y1="40" x2="10" y2="40" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="0" y1="50" x2="10" y2="50" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="0" y1="60" x2="10" y2="60" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="0" y1="70" x2="10" y2="70" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="0" y1="80" x2="10" y2="80" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="0" y1="90" x2="10" y2="90" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="96" y1="20" x2="106" y2="20" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="96" y1="30" x2="106" y2="30" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="96" y1="40" x2="106" y2="40" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="96" y1="50" x2="106" y2="50" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="96" y1="60" x2="106" y2="60" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="96" y1="70" x2="106" y2="70" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="96" y1="80" x2="106" y2="80" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="20" y1="0" x2="20" y2="10" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="30" y1="0" x2="30" y2="10" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="40" y1="0" x2="40" y2="10" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="50" y1="0" x2="50" y2="10" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="60" y1="0" x2="60" y2="10" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="70" y1="0" x2="70" y2="10" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="80" y1="0" x2="80" y2="10" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="90" y1="0" x2="90" y2="10" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="20" y1="96" x2="20" y2="106" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="30" y1="96" x2="30" y2="106" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="40" y1="96" x2="40" y2="106" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="50" y1="96" x2="50" y2="106" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="60" y1="96" x2="60" y2="106" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="70" y1="96" x2="70" y2="106" stroke="#00666a" stroke-width="1.5"/>
+                <line x1="80" y1="96" x2="80" y2="106" stroke="#00666a" stroke-width="1.5"/>
+                <!-- IHS base (silver metal) -->
+                <rect x="10" y="10" width="86" height="86" rx="6" fill="#b8b8c0" stroke="#888" stroke-width="0.5"/>
+                <!-- IHS raised center -->
+                <rect x="16" y="16" width="74" height="74" rx="4" fill="#c8c8d0"/>
+                <rect x="20" y="20" width="66" height="66" rx="3" fill="#d0d0d8"/>
+                <!-- IHS highlight/reflection -->
+                <rect x="20" y="20" width="66" height="10" rx="3" fill="#e0e0e8" opacity="0.5"/>
+                <!-- "intel CORE" text on IHS -->
+                <text x="53" y="46" font-size="7" fill="#555560" text-anchor="middle" font-family="serif" font-style="italic">intel.</text>
+                <text x="53" y="62" font-size="14" fill="#444450" text-anchor="middle" font-family="Georgia, serif" font-weight="bold" font-style="italic">CoRe</text>
+                <!-- notch corners (LGA1700 style) -->
+                <rect x="10" y="10" width="8" height="4" rx="0" fill="#004a5a"/>
+                <rect x="88" y="10" width="8" height="4" rx="0" fill="#004a5a"/>
+                <rect x="10" y="92" width="8" height="4" rx="0" fill="#004a5a"/>
+                <rect x="88" y="92" width="8" height="4" rx="0" fill="#004a5a"/>
+                <!-- Capacitors around IHS -->
+                <rect x="3" y="46" width="5" height="7" rx="1" fill="#222" stroke="#444" stroke-width="0.5"/>
+                <rect x="98" y="46" width="5" height="7" rx="1" fill="#222" stroke="#444" stroke-width="0.5"/>
+                <rect x="46" y="3" width="7" height="5" rx="1" fill="#222" stroke="#444" stroke-width="0.5"/>
+                <rect x="46" y="98" width="7" height="5" rx="1" fill="#222" stroke="#444" stroke-width="0.5"/>
+            </svg>
+        </div>
+
+        <!-- RAM -->
+        <div class="component-card card-ram">
+            <svg width="28" height="126" viewBox="0 0 28 126" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- PCB -->
+                <rect width="28" height="126" rx="2" fill="#1a3a1a"/>
+                <rect x="0.5" y="0.5" width="27" height="125" rx="1.5" stroke="#2a5a2a" stroke-width="0.8"/>
+                <!-- Heatspreader body -->
+                <rect x="2" y="2" width="24" height="100" rx="1" fill="#1e2a3a" stroke="#2a3a5a"/>
+                <!-- Heatspreader color band (Kingston red/blue) -->
+                <rect x="2" y="2" width="24" height="8" rx="1" fill="#c0392b"/>
+                <rect x="2" y="10" width="24" height="3" fill="#922b21"/>
+                <!-- Memory chips under spreader (visible from side) -->
+                <rect x="4" y="20" width="20" height="12" rx="1" fill="#111820" stroke="#1e2a3a"/>
+                <rect x="4" y="36" width="20" height="12" rx="1" fill="#111820" stroke="#1e2a3a"/>
+                <rect x="4" y="52" width="20" height="12" rx="1" fill="#111820" stroke="#1e2a3a"/>
+                <rect x="4" y="68" width="20" height="12" rx="1" fill="#111820" stroke="#1e2a3a"/>
+                <rect x="4" y="84" width="20" height="12" rx="1" fill="#111820" stroke="#1e2a3a"/>
+                <!-- Gold connector at bottom -->
+                <rect x="0" y="105" width="28" height="21" rx="0" fill="#b8860b"/>
+                <rect x="0" y="105" width="28" height="3" fill="#8B6914"/>
+                <!-- Connector notch -->
+                <rect x="8" y="108" width="4" height="18" rx="0" fill="#1a3a1a"/>
+                <!-- Connector pins -->
+                <g fill="#ffd700" opacity="0.8">
+                    <rect x="3" y="106" width="2" height="18"/><rect x="7" y="106" width="2" height="18"/>
+                    <rect x="14" y="106" width="2" height="18"/><rect x="18" y="106" width="2" height="18"/>
+                    <rect x="22" y="106" width="2" height="18"/>
+                </g>
+            </svg>
+        </div>
+
+        <!-- FAN -->
+        <div class="component-card card-fan">
+            <svg width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="76" height="76" rx="8" fill="#12121a"/>
+                <!-- Corner screws -->
+                <circle cx="8" cy="8" r="4" fill="#1e1e28" stroke="#333"/>
+                <circle cx="68" cy="8" r="4" fill="#1e1e28" stroke="#333"/>
+                <circle cx="8" cy="68" r="4" fill="#1e1e28" stroke="#333"/>
+                <circle cx="68" cy="68" r="4" fill="#1e1e28" stroke="#333"/>
+                <!-- Fan ring -->
+                <circle cx="38" cy="38" r="32" fill="#0e0e16" stroke="#2a2a3a"/>
+                <circle cx="38" cy="38" r="28" fill="#161620" stroke="#00ffff" stroke-width="0.5" opacity="0.5"/>
+                <!-- Fan blades -->
+                <g class="fan-inner" style="transform-origin: 38px 38px">
+                    <path d="M38 10 Q50 24 38 38 Q26 24 38 10Z" fill="#1e2a3a" stroke="#00ffff" stroke-width="0.4"/>
+                    <path d="M66 38 Q52 50 38 38 Q52 26 66 38Z" fill="#1e2a3a" stroke="#00ffff" stroke-width="0.4"/>
+                    <path d="M38 66 Q26 52 38 38 Q50 52 38 66Z" fill="#1e2a3a" stroke="#00ffff" stroke-width="0.4"/>
+                    <path d="M10 38 Q24 26 38 38 Q24 50 10 38Z" fill="#1e2a3a" stroke="#00ffff" stroke-width="0.4"/>
+                </g>
+                <!-- Center hub -->
+                <circle cx="38" cy="38" r="8" fill="#1a1a24" stroke="#333"/>
+                <circle cx="38" cy="38" r="4" fill="#222230" stroke="#00ffff" stroke-width="0.5"/>
+            </svg>
+        </div>
+
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon icon-purple">🧩</div>
+            <div class="feature-title">Compatibilidad Real</div>
+            <div class="feature-desc">El sistema verifica automáticamente si tu CPU, placa base y RAM son compatibles entre sí antes de confirmar el build.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon icon-cyan">🖥️</div>
+            <div class="feature-title">Visualización 3D</div>
+            <div class="feature-desc">Explora cada componente en un entorno tridimensional interactivo. Rota, acerca y examina tu PC desde todos los ángulos.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon icon-green">💰</div>
+            <div class="feature-title">Presupuesto en Tiempo Real</div>
+            <div class="feature-desc">El precio total de tu configuración se actualiza al instante con cada componente que añades o cambias.</div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="logo-small">PC BUILDER 3D</div>
+    <div>Proyecto de FP — Desarrollo de Aplicaciones Web</div>
+    <div>© 2025</div>
+</footer>
+
+</body>
+</html>
