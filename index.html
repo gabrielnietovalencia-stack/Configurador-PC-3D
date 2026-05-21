@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>PC Builder 3D — Configurador</title>
-<link rel="preconnect" href="[fonts.googleapis.com](https://fonts.googleapis.com)">
-<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap)" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
     --cyan:    #00ffff;
@@ -30,9 +30,9 @@ canvas { display: block; }
 .spinner-ring {
     width: 60px; height: 60px;
     border: 2px solid rgba(0,255,255,0.1); border-top: 2px solid var(--cyan);
-    border-radius: 50%; animation: spinRing 0.8s linear infinite;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
 }
-@keyframes spinRing { 100% { transform: rotate(360deg); } }
+@keyframes spin { 100% { transform: rotate(360deg); } }
 .loading-text {
     font-family: 'Orbitron', monospace; font-size: 10px;
     letter-spacing: 4px; color: var(--cyan); text-transform: uppercase;
@@ -77,6 +77,7 @@ canvas { display: block; }
     color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
 }
 
+/* BOTONES — usando class en vez de onclick directo para evitar bugs */
 .comp-btn {
     display: block; width: 100%; padding: 7px 10px; margin-bottom: 4px;
     background: rgba(255,255,255,0.03); color: var(--text);
@@ -175,8 +176,8 @@ canvas { display: block; }
 <script type="importmap">
 {
     "imports": {
-        "three": "[unpkg.com](https://unpkg.com/three@0.160.0/build/three.module.js)",
-        "three/addons/": "[unpkg.com](https://unpkg.com/three@0.160.0/examples/jsm/)"
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
     }
 }
 </script>
@@ -197,15 +198,17 @@ canvas { display: block; }
 <div id="menu">
     <div class="menu-header">
         <h3>PC Builder 3D</h3>
-        <a href="index.html" class="btn-back">← Inicio</a>
+        <a href="landing.html" class="btn-back">← Inicio</a>
     </div>
 
     <div class="menu-scroll">
+
         <div class="seccion">
             <div class="titulo-sec">📦 Caja</div>
             <button class="comp-btn" id="btn-caja-corsair">Corsair iCUE 4000D</button>
             <button class="comp-btn" id="btn-caja-fractal">Fractal Design North</button>
         </div>
+
         <div class="seccion">
             <div class="titulo-sec">🎛️ Placa Base</div>
             <button class="comp-btn" id="btn-placa-x570">ASUS Pro WS X570 <small>AM4 · DDR4</small></button>
@@ -213,6 +216,7 @@ canvas { display: block; }
             <button class="comp-btn" id="btn-placa-z790">MSI MAG Z790 <small>LGA1700 · DDR5</small></button>
             <button class="comp-btn" id="btn-placa-b660">ASUS B660M Plus <small>LGA1700 · DDR4</small></button>
         </div>
+
         <div class="seccion">
             <div class="titulo-sec">🔲 CPU</div>
             <button class="comp-btn" id="btn-cpu-5900x">Ryzen 9 5900X <small>AM4</small></button>
@@ -220,16 +224,19 @@ canvas { display: block; }
             <button class="comp-btn" id="btn-cpu-i9">Core i9-13900K <small>LGA1700</small></button>
             <button class="comp-btn" id="btn-cpu-i5">Core i5-13600K <small>LGA1700</small></button>
         </div>
+
         <div class="seccion">
             <div class="titulo-sec">💾 RAM</div>
             <button class="comp-btn" id="btn-ram-ddr4">Kingston 32GB DDR4 <small>DDR4</small></button>
             <button class="comp-btn" id="btn-ram-ddr5">Corsair 32GB DDR5 <small>DDR5</small></button>
         </div>
+
         <div class="seccion">
             <div class="titulo-sec">🎮 GPU</div>
             <button class="comp-btn" id="btn-gpu-4090">RTX 4090</button>
             <button class="comp-btn" id="btn-gpu-3090">RTX 3090</button>
         </div>
+
     </div>
 
     <div id="resumen">
@@ -241,7 +248,7 @@ canvas { display: block; }
     </div>
 
     <div id="total-box">
-        <div class="total-label">Total Build</div>
+        <div class="total-label">Total build</div>
         <div id="precio-total-wrap">
             <span id="precio-total">0</span><span>€</span>
         </div>
@@ -268,6 +275,7 @@ canvas { display: block; }
 <script type="module" src="app.js"></script>
 
 <script>
+// ── Datos de cada componente ──
 const COMPONENTES = {
     'btn-caja-corsair': {
         tipo:'caja', glb:'case_corsair.glb', nombre:'Corsair iCUE 4000D', precio:150,
@@ -330,27 +338,34 @@ const COMPONENTES = {
 function mostrarSpecs(tipo, nombre, specs) {
     document.getElementById('specs-tipo').textContent   = tipo.toUpperCase();
     document.getElementById('specs-nombre').textContent = nombre;
-    document.getElementById('specs-body').innerHTML = Object.entries(specs).map(([k,v]) =>
+    document.getElementById('specs-body').innerHTML = Object.entries(specs).map(([k, v]) =>
         `<div class="spec-row">
             <span class="spec-key">${k}</span>
-            <span class="spec-val ${k==='Precio'?'cyan':''}">${v}</span>
+            <span class="spec-val ${k==='Precio' ? 'cyan' : ''}">${v}</span>
         </div>`
     ).join('');
     document.getElementById('panel-specs').classList.add('visible');
 }
 
+// Registrar evento click en todos los botones de componentes
 document.querySelectorAll('.comp-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const data = COMPONENTES[this.id];
         if (!data) return;
-        document.querySelectorAll('.comp-btn').forEach(b => {
+
+        // Marcar activo
+        document.querySelectorAll(`.comp-btn`).forEach(b => {
             const d = COMPONENTES[b.id];
             if (d && d.tipo === data.tipo) b.classList.remove('activo');
         });
         this.classList.add('activo');
+
+        // Llamar a la función del módulo 3D
         if (window.cambiarComponente) {
             window.cambiarComponente(data.tipo, data.glb, data.nombre, data.precio);
         }
+
+        // Mostrar specs
         mostrarSpecs(data.tipo, data.nombre, data.specs);
     });
 });
@@ -361,32 +376,36 @@ document.getElementById('btn-reset-pc').addEventListener('click', function() {
     document.getElementById('panel-specs').classList.remove('visible');
 });
 
+// Callback de compatibilidad
 window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
     const panel = document.getElementById('panel-compat');
     const msgs  = document.getElementById('compat-msgs');
     const icon  = document.getElementById('compat-icon');
+
     panel.classList.remove('compat-ok','compat-err','compat-neu');
+
     if (errores.length > 0) {
-        panel.classList.add('compat-err','visible');
+        panel.classList.add('compat-err', 'visible');
         icon.textContent = '❌';
         msgs.innerHTML = errores.map(e => `<div class="err-line">${e}</div>`).join('');
     } else if (todoSeleccionado) {
-        panel.classList.add('compat-ok','visible');
+        panel.classList.add('compat-ok', 'visible');
         icon.textContent = '✅';
-        msgs.innerHTML = '<div class="ok-line">Build 100% compatible</div>';
+        msgs.innerHTML   = '<div class="ok-line">Build 100% compatible</div>';
         setTimeout(() => panel.classList.remove('visible'), 3000);
     } else {
         const haySeleccion = document.querySelector('.comp-btn.activo');
         if (haySeleccion) {
-            panel.classList.add('compat-neu','visible');
+            panel.classList.add('compat-neu', 'visible');
             icon.textContent = '⚠️';
-            msgs.innerHTML = '<div class="neu-line">Selecciona placa, CPU y RAM para verificar</div>';
+            msgs.innerHTML   = '<div class="neu-line">Selecciona placa, CPU y RAM para verificar</div>';
         } else {
             panel.classList.remove('visible');
         }
     }
 };
 
+// Cargar selección inicial al arrancar
 window.addEventListener('load', () => {
     setTimeout(() => {
         document.getElementById('btn-caja-corsair').click();
