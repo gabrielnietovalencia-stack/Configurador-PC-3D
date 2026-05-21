@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>PC Builder 3D</title>
+<title>PC Builder 3D — Configurador</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -15,7 +15,6 @@
     --text:    #c8d8e8;
     --muted:   #4a6070;
     --red:     #ef4444;
-    --orange:  #f97316;
     --green:   #22c55e;
     --yellow:  #eab308;
 }
@@ -23,7 +22,6 @@
 body { overflow: hidden; font-family: 'Rajdhani', sans-serif; background: var(--dark); cursor: crosshair; }
 canvas { display: block; }
 
-/* LOADING */
 #pantalla-carga {
     position: fixed; inset: 0; background: var(--dark);
     display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -31,10 +29,8 @@ canvas { display: block; }
 }
 .spinner-ring {
     width: 60px; height: 60px;
-    border: 2px solid rgba(0,255,255,0.1);
-    border-top: 2px solid var(--cyan);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    border: 2px solid rgba(0,255,255,0.1); border-top: 2px solid var(--cyan);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 .loading-text {
@@ -44,73 +40,69 @@ canvas { display: block; }
 }
 @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
-/* MENÚ IZQUIERDO */
 #menu {
-    position: absolute; top: 16px; left: 16px;
-    width: 248px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    color: var(--text);
-    backdrop-filter: blur(20px);
-    overflow: hidden;
-    animation: slideIn 0.5s ease both;
+    position: absolute; top: 16px; left: 16px; width: 248px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; color: var(--text); backdrop-filter: blur(20px);
+    overflow: hidden; animation: slideIn 0.5s ease both;
     max-height: calc(100vh - 32px);
     display: flex; flex-direction: column;
 }
 @keyframes slideIn { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
 
 .menu-header {
-    padding: 14px 16px 12px;
-    border-bottom: 1px solid var(--border);
+    padding: 14px 16px 12px; border-bottom: 1px solid var(--border);
     background: linear-gradient(135deg, rgba(0,255,255,0.05), transparent);
-    flex-shrink: 0;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
 }
 .menu-header h3 {
     font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 900;
     color: var(--cyan); letter-spacing: 2px; text-transform: uppercase;
 }
-.menu-header .subtitle { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; margin-top: 2px; }
+.btn-back {
+    font-size: 11px; color: var(--muted); text-decoration: none;
+    letter-spacing: 1px; padding: 3px 8px;
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 5px;
+    transition: all 0.15s; font-family: 'Rajdhani', sans-serif; font-weight: 600;
+}
+.btn-back:hover { color: var(--cyan); border-color: var(--border); }
 
-/* SCROLL AREA */
 .menu-scroll { overflow-y: auto; flex: 1; padding: 12px; }
 .menu-scroll::-webkit-scrollbar { width: 3px; }
-.menu-scroll::-webkit-scrollbar-track { background: transparent; }
 .menu-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .seccion { margin-bottom: 13px; }
 .titulo-sec {
     font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 3px;
-    color: var(--muted); text-transform: uppercase; margin-bottom: 6px; padding-left: 2px;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
 }
 
-button {
-    width: 100%; padding: 7px 10px; margin-bottom: 4px;
-    background: rgba(255,255,255,0.03);
-    color: var(--text);
+/* BOTONES — usando class en vez de onclick directo para evitar bugs */
+.comp-btn {
+    display: block; width: 100%; padding: 7px 10px; margin-bottom: 4px;
+    background: rgba(255,255,255,0.03); color: var(--text);
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 7px; cursor: pointer; transition: all 0.15s ease;
     font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
     text-align: left; letter-spacing: 0.3px;
     position: relative; overflow: hidden;
 }
-button::before {
+.comp-btn::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
     background: var(--cyan); opacity: 0; transition: opacity 0.15s;
 }
-button:hover { background: rgba(0,255,255,0.07); border-color: rgba(0,255,255,0.3); color: var(--cyan); transform: translateX(2px); }
-button:hover::before { opacity: 1; }
-button.activo { background: rgba(0,255,255,0.10); border-color: rgba(0,255,255,0.5); color: var(--cyan); }
-button.activo::before { opacity: 1; }
+.comp-btn:hover { background: rgba(0,255,255,0.07); border-color: rgba(0,255,255,0.3); color: var(--cyan); transform: translateX(2px); }
+.comp-btn:hover::before { opacity: 1; }
+.comp-btn.activo { background: rgba(0,255,255,0.10); border-color: rgba(0,255,255,0.5); color: var(--cyan); }
+.comp-btn.activo::before { opacity: 1; }
+.comp-btn small { color: var(--muted); font-size: 11px; }
+.comp-btn.activo small { color: var(--cyan2); }
 
-/* RESUMEN */
 #resumen {
     padding: 9px 14px; background: rgba(0,0,0,0.3);
     border-top: 1px solid var(--border); font-size: 11px; color: var(--muted);
     line-height: 1.9; flex-shrink: 0;
 }
-
-/* TOTAL */
 #total-box {
     padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
     background: linear-gradient(135deg, rgba(0,255,255,0.06), rgba(0,200,200,0.02));
@@ -120,7 +112,6 @@ button.activo::before { opacity: 1; }
 #precio-total-wrap { font-family: 'Orbitron', monospace; font-size: 17px; font-weight: 900; color: var(--cyan); }
 #precio-total-wrap span { font-size: 11px; margin-left: 1px; color: var(--cyan2); }
 
-/* RESET */
 .btn-reset {
     width: 100%; padding: 9px;
     background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
@@ -129,9 +120,8 @@ button.activo::before { opacity: 1; }
     letter-spacing: 1px; cursor: pointer; transition: all 0.15s; text-align: center;
     flex-shrink: 0;
 }
-.btn-reset:hover { background: rgba(239,68,68,0.16); border-color: var(--red); color: white; transform: none; }
+.btn-reset:hover { background: rgba(239,68,68,0.16); color: white; }
 
-/* PANEL COMPATIBILIDAD */
 #panel-compat {
     position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
     min-width: 260px; max-width: 500px;
@@ -141,12 +131,9 @@ button.activo::before { opacity: 1; }
     transition: opacity 0.3s ease, transform 0.3s ease;
     transform: translateX(-50%) translateY(6px);
 }
-#panel-compat.visible {
-    opacity: 1; pointer-events: auto;
-    transform: translateX(-50%) translateY(0);
-}
-.compat-ok  { border: 1px solid rgba(34,197,94,0.4);  }
-.compat-err { border: 1px solid rgba(239,68,68,0.4);  }
+#panel-compat.visible { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+.compat-ok  { border: 1px solid rgba(34,197,94,0.4); }
+.compat-err { border: 1px solid rgba(239,68,68,0.4); }
 .compat-neu { border: 1px solid rgba(234,179,8,0.35); }
 .compat-inner { padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
 .compat-icon { font-size: 16px; }
@@ -155,7 +142,6 @@ button.activo::before { opacity: 1; }
 .compat-msgs .ok-line  { color: var(--green); }
 .compat-msgs .neu-line { color: var(--yellow); }
 
-/* PANEL SPECS (derecha) */
 #panel-specs {
     position: absolute; top: 16px; right: 16px; width: 210px;
     background: var(--panel); border: 1px solid var(--border);
@@ -173,19 +159,17 @@ button.activo::before { opacity: 1; }
 .specs-body { padding: 8px 14px; }
 .spec-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 12px;
+    padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px;
 }
 .spec-row:last-child { border-bottom: none; }
 .spec-key { color: var(--muted); }
 .spec-val { color: var(--text); font-weight: 600; }
 .spec-val.cyan { color: var(--cyan); }
-.spec-val.red  { color: var(--red); }
 
-/* INSTRUCCIONES */
 #instrucciones {
     position: absolute; bottom: 12px; width: 100%; text-align: center;
-    color: var(--muted); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; pointer-events: none;
+    color: var(--muted); font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; pointer-events: none;
 }
 #instrucciones span { color: var(--cyan); }
 </style>
@@ -201,120 +185,60 @@ button.activo::before { opacity: 1; }
 <body>
 
 <div id="instrucciones">
-    <span>Drag</span> to rotate &nbsp;·&nbsp; <span>Scroll</span> to zoom &nbsp;·&nbsp; <span>Right-click</span> to pan
+    <span>Arrastrar</span> para rotar &nbsp;·&nbsp;
+    <span>Rueda</span> para zoom &nbsp;·&nbsp;
+    <span>Click derecho</span> para mover
 </div>
 
-<!-- LOADING -->
 <div id="pantalla-carga">
     <div class="spinner-ring"></div>
-    <div class="loading-text">Initializing PC Builder</div>
+    <div class="loading-text">Cargando PC Builder 3D</div>
 </div>
 
-<!-- MENÚ -->
 <div id="menu">
     <div class="menu-header">
         <h3>PC Builder 3D</h3>
-        <div class="subtitle">Configura tu equipo</div>
+        <a href="landing.html" class="btn-back">← Inicio</a>
     </div>
 
     <div class="menu-scroll">
-        <!-- CAJA -->
+
         <div class="seccion">
             <div class="titulo-sec">📦 Caja</div>
-            <button id="btn-caja-corsair"
-                onclick="sel('caja','corsair','case_corsair.glb','Corsair iCUE 4000D',150,
-                    {Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahías:'2×3.5\"+4×2.5\"',Peso:'7.8 kg',Precio:'150€'})">
-                Corsair iCUE 4000D
-            </button>
-            <button id="btn-caja-fractal"
-                onclick="sel('caja','fractal','case_fractal.glb','Fractal Design North',180,
-                    {Formato:'ATX Mid-Tower',Material:'Acero + Madera',Bahías:'2×3.5\"+3×2.5\"',Peso:'8.2 kg',Precio:'180€'})">
-                Fractal Design North
-            </button>
+            <button class="comp-btn" id="btn-caja-corsair">Corsair iCUE 4000D</button>
+            <button class="comp-btn" id="btn-caja-fractal">Fractal Design North</button>
         </div>
 
-        <!-- PLACA BASE -->
         <div class="seccion">
             <div class="titulo-sec">🎛️ Placa Base</div>
-            <button id="btn-placa-x570"
-                onclick="sel('placa','x570','mobo_pro.glb','ASUS Pro WS X570',350,
-                    {Socket:'AM4',Chipset:'X570',RAM:'DDR4 · 128GB',PCIe:'3× PCIe 4.0',Precio:'350€'})">
-                ASUS Pro WS X570 <small style="color:#4a6070"> · AM4 · DDR4</small>
-            </button>
-            <button id="btn-placa-b550"
-                onclick="sel('placa','b550','mobo_generic.glb','Genérica B550M',120,
-                    {Socket:'AM4',Chipset:'B550',RAM:'DDR4 · 64GB',PCIe:'1× PCIe 4.0',Precio:'120€'})">
-                Genérica B550M <small style="color:#4a6070"> · AM4 · DDR4</small>
-            </button>
-            <button id="btn-placa-z790"
-                onclick="sel('placa','z790','mobo_z790.glb','MSI MAG Z790',420,
-                    {Socket:'LGA1700',Chipset:'Z790',RAM:'DDR5 · 192GB',PCIe:'2× PCIe 5.0',Precio:'420€'})">
-                MSI MAG Z790 <small style="color:#4a6070"> · LGA1700 · DDR5</small>
-            </button>
-            <button id="btn-placa-b660"
-                onclick="sel('placa','b660','mobo_b660.glb','ASUS B660M Plus',200,
-                    {Socket:'LGA1700',Chipset:'B660',RAM:'DDR4 · 128GB',PCIe:'1× PCIe 5.0',Precio:'200€'})">
-                ASUS B660M Plus <small style="color:#4a6070"> · LGA1700 · DDR4</small>
-            </button>
+            <button class="comp-btn" id="btn-placa-x570">ASUS Pro WS X570 <small>AM4 · DDR4</small></button>
+            <button class="comp-btn" id="btn-placa-b550">Genérica B550M <small>AM4 · DDR4</small></button>
+            <button class="comp-btn" id="btn-placa-z790">MSI MAG Z790 <small>LGA1700 · DDR5</small></button>
+            <button class="comp-btn" id="btn-placa-b660">ASUS B660M Plus <small>LGA1700 · DDR4</small></button>
         </div>
 
-        <!-- CPU -->
         <div class="seccion">
             <div class="titulo-sec">🔲 CPU</div>
-            <button id="btn-cpu-5900x"
-                onclick="sel('cpu','5900x','cpu_5900x.glb','Ryzen 9 5900X',550,
-                    {Socket:'AM4',Núcleos:'12C / 24T',Base:'3.7 GHz',Boost:'4.8 GHz',TDP:'105W',Precio:'550€'})">
-                Ryzen 9 5900X <small style="color:#4a6070"> · AM4</small>
-            </button>
-            <button id="btn-cpu-5600x"
-                onclick="sel('cpu','5600x','cpu_5600x.glb','Ryzen 5 5600X',220,
-                    {Socket:'AM4',Núcleos:'6C / 12T',Base:'3.7 GHz',Boost:'4.6 GHz',TDP:'65W',Precio:'220€'})">
-                Ryzen 5 5600X <small style="color:#4a6070"> · AM4</small>
-            </button>
-            <button id="btn-cpu-i9"
-                onclick="sel('cpu','i9','cpu_i9.glb','Core i9-13900K',650,
-                    {Socket:'LGA1700',Núcleos:'24C / 32T',Base:'3.0 GHz',Boost:'5.8 GHz',TDP:'125W',Precio:'650€'})">
-                Core i9-13900K <small style="color:#4a6070"> · LGA1700</small>
-            </button>
-            <button id="btn-cpu-i5"
-                onclick="sel('cpu','i5','cpu_i5.glb','Core i5-13600K',320,
-                    {Socket:'LGA1700',Núcleos:'14C / 20T',Base:'3.5 GHz',Boost:'5.1 GHz',TDP:'125W',Precio:'320€'})">
-                Core i5-13600K <small style="color:#4a6070"> · LGA1700</small>
-            </button>
+            <button class="comp-btn" id="btn-cpu-5900x">Ryzen 9 5900X <small>AM4</small></button>
+            <button class="comp-btn" id="btn-cpu-5600x">Ryzen 5 5600X <small>AM4</small></button>
+            <button class="comp-btn" id="btn-cpu-i9">Core i9-13900K <small>LGA1700</small></button>
+            <button class="comp-btn" id="btn-cpu-i5">Core i5-13600K <small>LGA1700</small></button>
         </div>
 
-        <!-- RAM -->
         <div class="seccion">
             <div class="titulo-sec">💾 RAM</div>
-            <button id="btn-ram-ddr4"
-                onclick="sel('ram','ddr4','ram_ddr4.glb','Kingston 32GB DDR4',90,
-                    {Tipo:'DDR4',Capacidad:'32 GB (2×16)',Velocidad:'3200 MHz',CAS:'CL16',Precio:'90€'})">
-                Kingston DDR4 32GB <small style="color:#4a6070"> · DDR4</small>
-            </button>
-            <button id="btn-ram-ddr5"
-                onclick="sel('ram','ddr5','ram_ddr5.glb','Corsair 32GB DDR5',160,
-                    {Tipo:'DDR5',Capacidad:'32 GB (2×16)',Velocidad:'6000 MHz',CAS:'CL36',Precio:'160€'})">
-                Corsair 32GB DDR5 <small style="color:#4a6070"> · DDR5</small>
-            </button>
+            <button class="comp-btn" id="btn-ram-ddr4">Kingston 32GB DDR4 <small>DDR4</small></button>
+            <button class="comp-btn" id="btn-ram-ddr5">Corsair 32GB DDR5 <small>DDR5</small></button>
         </div>
 
-        <!-- GPU -->
         <div class="seccion">
             <div class="titulo-sec">🎮 GPU</div>
-            <button id="btn-gpu-4090"
-                onclick="sel('grafica','4090','gpu_4090.glb','NVIDIA RTX 4090',2000,
-                    {VRAM:'24 GB GDDR6X',CUDA:'16 384',TDP:'450W',Rendimiento:'Extremo',Precio:'2000€'})">
-                RTX 4090
-            </button>
-            <button id="btn-gpu-3090"
-                onclick="sel('grafica','3090','gpu_3090.glb','NVIDIA RTX 3090',1200,
-                    {VRAM:'24 GB GDDR6X',CUDA:'10 496',TDP:'350W',Rendimiento:'Alto',Precio:'1200€'})">
-                RTX 3090
-            </button>
+            <button class="comp-btn" id="btn-gpu-4090">RTX 4090</button>
+            <button class="comp-btn" id="btn-gpu-3090">RTX 3090</button>
         </div>
+
     </div>
 
-    <!-- RESUMEN -->
     <div id="resumen">
         <div id="txt-caja"    style="color:var(--muted)">CAJA: —</div>
         <div id="txt-placa"   style="color:var(--muted)">PLACA: —</div>
@@ -323,7 +247,6 @@ button.activo::before { opacity: 1; }
         <div id="txt-grafica" style="color:var(--muted)">GPU: —</div>
     </div>
 
-    <!-- TOTAL -->
     <div id="total-box">
         <div class="total-label">Total build</div>
         <div id="precio-total-wrap">
@@ -331,10 +254,9 @@ button.activo::before { opacity: 1; }
         </div>
     </div>
 
-    <button class="btn-reset" onclick="reiniciarPC()">🗑 &nbsp;Reset Build</button>
+    <button class="btn-reset" id="btn-reset-pc">🗑 &nbsp;Reset Build</button>
 </div>
 
-<!-- PANEL SPECS -->
 <div id="panel-specs">
     <div class="specs-header">
         <div class="specs-tipo" id="specs-tipo">—</div>
@@ -343,7 +265,6 @@ button.activo::before { opacity: 1; }
     <div class="specs-body" id="specs-body"></div>
 </div>
 
-<!-- PANEL COMPATIBILIDAD -->
 <div id="panel-compat">
     <div class="compat-inner">
         <div class="compat-icon" id="compat-icon">⚙️</div>
@@ -354,40 +275,114 @@ button.activo::before { opacity: 1; }
 <script type="module" src="app.js"></script>
 
 <script>
-// ── Botón activo ──
-function marcarActivo(prefijo, id) {
-    document.querySelectorAll(`[id^="btn-${prefijo}-"]`).forEach(b => b.classList.remove('activo'));
-    const btn = document.getElementById(`btn-${prefijo}-${id}`);
-    if (btn) btn.classList.add('activo');
-}
+// ── Datos de cada componente ──
+const COMPONENTES = {
+    'btn-caja-corsair': {
+        tipo:'caja', glb:'case_corsair.glb', nombre:'Corsair iCUE 4000D', precio:150,
+        specs:{Formato:'ATX Mid-Tower', Material:'Acero + Vidrio', Bahias:'2x3.5 + 4x2.5', Peso:'7.8 kg', Precio:'150 EUR'}
+    },
+    'btn-caja-fractal': {
+        tipo:'caja', glb:'case_fractal.glb', nombre:'Fractal Design North', precio:180,
+        specs:{Formato:'ATX Mid-Tower', Material:'Acero + Madera', Bahias:'2x3.5 + 3x2.5', Peso:'8.2 kg', Precio:'180 EUR'}
+    },
+    'btn-placa-x570': {
+        tipo:'placa', glb:'mobo_pro.glb', nombre:'ASUS Pro WS X570', precio:350,
+        specs:{Socket:'AM4', Chipset:'X570', RAM:'DDR4 / 128GB', PCIe:'3x PCIe 4.0', Precio:'350 EUR'}
+    },
+    'btn-placa-b550': {
+        tipo:'placa', glb:'mobo_generic.glb', nombre:'Generica B550M', precio:120,
+        specs:{Socket:'AM4', Chipset:'B550', RAM:'DDR4 / 64GB', PCIe:'1x PCIe 4.0', Precio:'120 EUR'}
+    },
+    'btn-placa-z790': {
+        tipo:'placa', glb:'mobo_z790.glb', nombre:'MSI MAG Z790', precio:420,
+        specs:{Socket:'LGA1700', Chipset:'Z790', RAM:'DDR5 / 192GB', PCIe:'2x PCIe 5.0', Precio:'420 EUR'}
+    },
+    'btn-placa-b660': {
+        tipo:'placa', glb:'mobo_b660.glb', nombre:'ASUS B660M Plus', precio:200,
+        specs:{Socket:'LGA1700', Chipset:'B660', RAM:'DDR4 / 128GB', PCIe:'1x PCIe 5.0', Precio:'200 EUR'}
+    },
+    'btn-cpu-5900x': {
+        tipo:'cpu', glb:'cpu_5900x.glb', nombre:'Ryzen 9 5900X', precio:550,
+        specs:{Socket:'AM4', Nucleos:'12C / 24T', Base:'3.7 GHz', Boost:'4.8 GHz', TDP:'105W', Precio:'550 EUR'}
+    },
+    'btn-cpu-5600x': {
+        tipo:'cpu', glb:'cpu_5600x.glb', nombre:'Ryzen 5 5600X', precio:220,
+        specs:{Socket:'AM4', Nucleos:'6C / 12T', Base:'3.7 GHz', Boost:'4.6 GHz', TDP:'65W', Precio:'220 EUR'}
+    },
+    'btn-cpu-i9': {
+        tipo:'cpu', glb:'cpu_i9.glb', nombre:'Core i9-13900K', precio:650,
+        specs:{Socket:'LGA1700', Nucleos:'24C / 32T', Base:'3.0 GHz', Boost:'5.8 GHz', TDP:'125W', Precio:'650 EUR'}
+    },
+    'btn-cpu-i5': {
+        tipo:'cpu', glb:'cpu_i5.glb', nombre:'Core i5-13600K', precio:320,
+        specs:{Socket:'LGA1700', Nucleos:'14C / 20T', Base:'3.5 GHz', Boost:'5.1 GHz', TDP:'125W', Precio:'320 EUR'}
+    },
+    'btn-ram-ddr4': {
+        tipo:'ram', glb:'ram_ddr4.glb', nombre:'Kingston 32GB DDR4', precio:90,
+        specs:{Tipo:'DDR4', Capacidad:'32 GB (2x16)', Velocidad:'3200 MHz', CAS:'CL16', Precio:'90 EUR'}
+    },
+    'btn-ram-ddr5': {
+        tipo:'ram', glb:'ram_ddr5.glb', nombre:'Corsair 32GB DDR5', precio:160,
+        specs:{Tipo:'DDR5', Capacidad:'32 GB (2x16)', Velocidad:'6000 MHz', CAS:'CL36', Precio:'160 EUR'}
+    },
+    'btn-gpu-4090': {
+        tipo:'grafica', glb:'gpu_4090.glb', nombre:'NVIDIA RTX 4090', precio:2000,
+        specs:{VRAM:'24 GB GDDR6X', CUDA:'16 384', TDP:'450W', Rendimiento:'Extremo', Precio:'2000 EUR'}
+    },
+    'btn-gpu-3090': {
+        tipo:'grafica', glb:'gpu_3090.glb', nombre:'NVIDIA RTX 3090', precio:1200,
+        specs:{VRAM:'24 GB GDDR6X', CUDA:'10 496', TDP:'350W', Rendimiento:'Alto', Precio:'1200 EUR'}
+    }
+};
 
-// ── Panel de specs ──
 function mostrarSpecs(tipo, nombre, specs) {
     document.getElementById('specs-tipo').textContent   = tipo.toUpperCase();
     document.getElementById('specs-nombre').textContent = nombre;
-    const body = document.getElementById('specs-body');
-    body.innerHTML = Object.entries(specs).map(([k, v]) => `
-        <div class="spec-row">
+    document.getElementById('specs-body').innerHTML = Object.entries(specs).map(([k, v]) =>
+        `<div class="spec-row">
             <span class="spec-key">${k}</span>
             <span class="spec-val ${k==='Precio' ? 'cyan' : ''}">${v}</span>
-        </div>`).join('');
+        </div>`
+    ).join('');
     document.getElementById('panel-specs').classList.add('visible');
 }
 
-// ── Helper combinado ──
-function sel(tipo, id, glb, nombre, precio, specs) {
-    cambiarComponente(tipo, glb, nombre, precio);
-    marcarActivo(tipo, id);
-    mostrarSpecs(tipo, nombre, specs);
-}
+// Registrar evento click en todos los botones de componentes
+document.querySelectorAll('.comp-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const data = COMPONENTES[this.id];
+        if (!data) return;
 
-// ── Callback de compatibilidad (llamado desde app.js) ──
+        // Marcar activo
+        document.querySelectorAll(`.comp-btn`).forEach(b => {
+            const d = COMPONENTES[b.id];
+            if (d && d.tipo === data.tipo) b.classList.remove('activo');
+        });
+        this.classList.add('activo');
+
+        // Llamar a la función del módulo 3D
+        if (window.cambiarComponente) {
+            window.cambiarComponente(data.tipo, data.glb, data.nombre, data.precio);
+        }
+
+        // Mostrar specs
+        mostrarSpecs(data.tipo, data.nombre, data.specs);
+    });
+});
+
+document.getElementById('btn-reset-pc').addEventListener('click', function() {
+    if (window.reiniciarPC) window.reiniciarPC();
+    document.querySelectorAll('.comp-btn').forEach(b => b.classList.remove('activo'));
+    document.getElementById('panel-specs').classList.remove('visible');
+});
+
+// Callback de compatibilidad
 window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
     const panel = document.getElementById('panel-compat');
     const msgs  = document.getElementById('compat-msgs');
     const icon  = document.getElementById('compat-icon');
 
-    panel.classList.remove('compat-ok', 'compat-err', 'compat-neu');
+    panel.classList.remove('compat-ok','compat-err','compat-neu');
 
     if (errores.length > 0) {
         panel.classList.add('compat-err', 'visible');
@@ -395,37 +390,30 @@ window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
         msgs.innerHTML = errores.map(e => `<div class="err-line">${e}</div>`).join('');
     } else if (todoSeleccionado) {
         panel.classList.add('compat-ok', 'visible');
-        icon.textContent  = '✅';
-        msgs.innerHTML    = '<div class="ok-line">Build 100% compatible</div>';
-        // Ocultar tras 3 segundos
+        icon.textContent = '✅';
+        msgs.innerHTML   = '<div class="ok-line">Build 100% compatible</div>';
         setTimeout(() => panel.classList.remove('visible'), 3000);
-    } else if (archivoActualTieneAlgo()) {
-        panel.classList.add('compat-neu', 'visible');
-        icon.textContent = '⚠️';
-        msgs.innerHTML   = '<div class="neu-line">Selecciona placa, CPU y RAM</div>';
     } else {
-        panel.classList.remove('visible');
+        const haySeleccion = document.querySelector('.comp-btn.activo');
+        if (haySeleccion) {
+            panel.classList.add('compat-neu', 'visible');
+            icon.textContent = '⚠️';
+            msgs.innerHTML   = '<div class="neu-line">Selecciona placa, CPU y RAM para verificar</div>';
+        } else {
+            panel.classList.remove('visible');
+        }
     }
 };
 
-function archivoActualTieneAlgo() {
-    // Detectar si hay al menos un componente relevante para compat seleccionado
-    return !!(document.querySelector('[id^="btn-placa-"].activo') ||
-              document.querySelector('[id^="btn-cpu-"].activo') ||
-              document.querySelector('[id^="btn-ram-"].activo'));
-}
-
-// Marcar selección inicial
+// Cargar selección inicial al arrancar
 window.addEventListener('load', () => {
     setTimeout(() => {
-        marcarActivo('caja',    'corsair');
-        marcarActivo('placa',   'x570');
-        marcarActivo('cpu',     '5900x');
-        marcarActivo('ram',     'ddr4');
-        marcarActivo('gpu',     '4090');
-        mostrarSpecs('cpu', 'Ryzen 9 5900X',
-            {Socket:'AM4',Núcleos:'12C / 24T',Base:'3.7 GHz',Boost:'4.8 GHz',TDP:'105W',Precio:'550€'});
-    }, 200);
+        document.getElementById('btn-caja-corsair').click();
+        document.getElementById('btn-placa-x570').click();
+        document.getElementById('btn-cpu-5900x').click();
+        document.getElementById('btn-ram-ddr4').click();
+        document.getElementById('btn-gpu-4090').click();
+    }, 300);
 });
 </script>
 </body>
