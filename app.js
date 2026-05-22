@@ -241,23 +241,6 @@ window.reiniciarPC = function() {
     if (window.onCompatibilidadActualizada) window.onCompatibilidadActualizada([], false);
 };
 
-// ── GUI DE CALIBRACIÓN ──
-const gui = new GUI({ title: '📐 Calibrador' });
-window._gui = gui;
-const params = {}; window._guiParams = params;
-TIPOS.forEach(t => {
-    params[t+'_Scale'] = 1; params[t+'_X'] = 0; params[t+'_Y'] = 0; params[t+'_Z'] = 0;
-});
-
-['caja', 'cpu', 'ram'].forEach(t => {
-    const label = { caja: '📦 CAJA', cpu:'🔲 CPU', ram:'💾 RAM' }[t];
-    const f = gui.addFolder(label);
-    f.add(params, t+'_Scale', 0.001, 50, 0.001).name('Escala').onChange(v => { const m = CONTENEDORES[t].children[0]; if (m) m.scale.setScalar(v); });
-    f.add(params, t+'_X', -5, 5, 0.001).name('Mover X').onChange(v => { const m = CONTENEDORES[t].children[0]; if (m) m.position.x = v; });
-    f.add(params, t+'_Y', -2, 5, 0.001).name('Mover Y').onChange(v => { const m = CONTENEDORES[t].children[0]; if (m) m.position.y = v; });
-    f.add(params, t+'_Z', -5, 5, 0.001).name('Mover Z').onChange(v => { const m = CONTENEDORES[t].children[0]; if (m) m.position.z = v; });
-});
-
 // ── ANIMACIÓN ──
 function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
 animate();
