@@ -15,7 +15,6 @@ loadingManager.onLoad = () => {
 };
 
 // ── ESCENA ──
-const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x111116);
 const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
 camera.position.set(0, 3, 6);
@@ -55,12 +54,12 @@ const CFG_GPU = {
     rot: { x: 3.0178850846808407, y: -1.5492430132602115, z: -1.7126768605325078 }
 };
 const CFG_CPU = {
-    escala: 0.2,
+    escala: 0.04,
     pos: { x: 0.39, y: 1.386, z: -0.631 },
-    rot: { x: 0, y: -0.1, z: 1.59 }
+    rot: { x: 0, y: 0, z: 0 }
 };
 const CFG_RAM = {
-    escala: 0.28,
+    escala: 0.14,
     pos: { x: 0.35, y: 1.3, z: -0.354 },
     rot: { x: 0, y: 0, z: 0 }
 };
@@ -167,7 +166,6 @@ function crearPlacaBase(chipset) {
         g.add(pin);
     }
 
-
     const vrmMat = new THREE.MeshStandardMaterial({ color: esPremium ? 0x1a1a3a : 0x1a1a1a, metalness:0.8, roughness:0.3 });
     const vrmGeo = new THREE.BoxGeometry(0.13*S, 0.07*S, 0.13*S);
     [[-0.68,-0.32],[-0.54,-0.32],[-0.40,-0.32],[-0.68,-0.18],[-0.68,-0.04],[-0.68,0.10],[-0.54,0.10]].forEach(([x,z]) => {
@@ -175,7 +173,6 @@ function crearPlacaBase(chipset) {
         v.position.set(x*S, 0.055*S, z*S); g.add(v);
     });
 
-   
     const capMat = new THREE.MeshStandardMaterial({ color:0x111120, metalness:0.5, roughness:0.5 });
     const capGeo = new THREE.CylinderGeometry(0.028*S, 0.028*S, 0.08*S, 8);
     [[-0.1,-0.1],[-0.1,0.06],[0.06,-0.1],[0.06,0.06],[-0.1,0.22],[0.06,0.22],[-0.25,-0.55],[0,-0.55]].forEach(([x,z]) => {
@@ -183,7 +180,6 @@ function crearPlacaBase(chipset) {
         c.position.set(x*S, 0.06*S, z*S); g.add(c);
     });
 
- 
     const ramSlotMat = new THREE.MeshStandardMaterial({ color:0x0a0f0a, metalness:0.4, roughness:0.7 });
     const ramClipMat = new THREE.MeshStandardMaterial({ color:0x2a2a2a });
     [0.56, 0.70, 0.84, 0.98].forEach((x, i) => {
@@ -212,7 +208,6 @@ function crearPlacaBase(chipset) {
         rim.position.set(x*S, 0.055*S, z*S); g.add(rim);
     });
 
-
     const chipGeo = new THREE.BoxGeometry(0.24*S, 0.04*S, 0.24*S);
     const chipMat = new THREE.MeshStandardMaterial({ color:0x111118, metalness:0.85, roughness:0.25 });
     const chip = new THREE.Mesh(chipGeo, chipMat);
@@ -221,7 +216,6 @@ function crearPlacaBase(chipset) {
     const chipLabel = new THREE.Mesh(new THREE.BoxGeometry(0.18*S, 0.005*S, 0.08*S),
         new THREE.MeshStandardMaterial({ color: esPremium ? 0x0055aa : 0x444444, metalness:0 }));
     chipLabel.position.set(0.3*S, 0.062*S, 0.12*S); g.add(chipLabel);
-
 
     const sataMat = new THREE.MeshStandardMaterial({ color:0x222222, metalness:0.7, roughness:0.4 });
     for (let i=0; i<6; i++) {
@@ -233,7 +227,6 @@ function crearPlacaBase(chipset) {
         tab.position.set(0.78*S, 0.072*S, (0.05 + i*0.135 + 0.065)*S); g.add(tab);
     }
 
- 
     const io = new THREE.Mesh(new THREE.BoxGeometry(0.05*S, 0.18*S, 0.7*S),
         new THREE.MeshStandardMaterial({ color:0x1a1a1a, metalness:0.6, roughness:0.6 }));
     io.position.set(-0.86*S, 0.1*S, -0.52*S); g.add(io);
@@ -244,15 +237,12 @@ function crearPlacaBase(chipset) {
         usb.position.set(-0.84*S, 0.1*S, (-0.65 + i*0.16)*S); g.add(usb);
     }
 
- 
     const pwrMat = new THREE.MeshStandardMaterial({ color:0x111111, metalness:0.5, roughness:0.6 });
     const pwr = new THREE.Mesh(new THREE.BoxGeometry(0.07*S, 0.12*S, 0.32*S), pwrMat);
     pwr.position.set(0.84*S, 0.07*S, -0.62*S); g.add(pwr);
-
   
     const cpuPwr = new THREE.Mesh(new THREE.BoxGeometry(0.1*S, 0.1*S, 0.1*S), pwrMat);
     cpuPwr.position.set(-0.6*S, 0.07*S, -0.72*S); g.add(cpuPwr);
-
 
     if (esPremium) {
         const led = new THREE.Mesh(new THREE.BoxGeometry(1.6*S, 0.006*S, 0.05*S),
@@ -267,19 +257,16 @@ function crearPlacaBase(chipset) {
     return g;
 }
 
-
 function crearCPU(marca) {
     const g = new THREE.Group();
     const esIntel = (marca === 'intel');
     const S = 5;
-
 
     const pcbMat = new THREE.MeshStandardMaterial({
         color: esIntel ? 0x004a58 : 0x005028,
         metalness:0.15, roughness:0.85
     });
     g.add(new THREE.Mesh(new THREE.BoxGeometry(1.05*S, 0.045*S, 1.05*S), pcbMat));
-
     
     const pinMat = new THREE.MeshStandardMaterial({ color:0xffd700, metalness:1.0, roughness:0.04 });
     const pinGeo = new THREE.CylinderGeometry(0.016*S, 0.016*S, 0.03*S, 6);
@@ -289,7 +276,6 @@ function crearCPU(marca) {
         pin.position.set(x*0.072*S, -0.035*S, z*0.072*S);
         g.add(pin);
     }
-
  
     const capMat = new THREE.MeshStandardMaterial({ color:0x1a1a2a, metalness:0.6, roughness:0.4 });
     const capGeo = new THREE.CylinderGeometry(0.025*S, 0.025*S, 0.06*S, 8);
@@ -297,7 +283,6 @@ function crearCPU(marca) {
         const c = new THREE.Mesh(capGeo, capMat);
         c.position.set(x*S, 0.05*S, z*S); g.add(c);
     });
-
   
     const smdMat = new THREE.MeshStandardMaterial({ color:0x333340, metalness:0.3, roughness:0.8 });
     for (let i=0; i<12; i++) {
@@ -308,30 +293,24 @@ function crearCPU(marca) {
         smd.rotation.y = angle;
         g.add(smd);
     }
-
    
     const ihsBaseMat = new THREE.MeshStandardMaterial({ color:0x999999, metalness:0.95, roughness:0.06 });
     const ihsBase = new THREE.Mesh(new THREE.BoxGeometry(0.84*S, 0.018*S, 0.84*S), ihsBaseMat);
     ihsBase.position.y = 0.03*S; g.add(ihsBase);
-
     
     const ihsMat = new THREE.MeshStandardMaterial({ color:0xcccccc, metalness:0.92, roughness:0.07 });
     const ihs = new THREE.Mesh(new THREE.BoxGeometry(0.76*S, 0.07*S, 0.76*S), ihsMat);
     ihs.position.y = 0.059*S; g.add(ihs);
-
   
     const topMat = new THREE.MeshStandardMaterial({ color:0xdadade, metalness:0.88, roughness:0.04 });
     const top = new THREE.Mesh(new THREE.BoxGeometry(0.70*S, 0.006*S, 0.70*S), topMat);
     top.position.y = 0.097*S; g.add(top);
-
  
     if (esIntel) {
- 
         const notch = new THREE.Mesh(new THREE.BoxGeometry(0.09*S, 0.05*S, 0.18*S),
             new THREE.MeshStandardMaterial({ color:0x004a58 }));
         notch.position.set(-0.52*S, 0.025*S, -0.30*S); g.add(notch);
     } else {
-      
         [-1, 1].forEach(side => {
             const notch = new THREE.Mesh(new THREE.BoxGeometry(0.12*S, 0.05*S, 0.05*S),
                 new THREE.MeshStandardMaterial({ color:0x005028 }));
@@ -339,12 +318,10 @@ function crearCPU(marca) {
         });
     }
 
-
     const logoColor = esIntel ? 0x0071c5 : 0xed1c24;
     const logo = new THREE.Mesh(new THREE.BoxGeometry(0.22*S, 0.003*S, 0.08*S),
         new THREE.MeshStandardMaterial({ color:logoColor, emissive:logoColor, emissiveIntensity:0.15, roughness:1 }));
     logo.position.set(-0.1*S, 0.1*S, -0.05*S); g.add(logo);
-
  
     const grisRect = new THREE.Mesh(new THREE.BoxGeometry(0.30*S, 0.003*S, 0.20*S),
         new THREE.MeshStandardMaterial({ color:0x888892, roughness:0.7 }));
@@ -353,18 +330,15 @@ function crearCPU(marca) {
     return g;
 }
 
-
 function crearRAM(ramTipo) {
     const g = new THREE.Group();
     const esDDR5 = (ramTipo === 'DDR5');
     const S = 3.5;
-
    
     g.add(new THREE.Mesh(
         new THREE.BoxGeometry(0.16*S, 1.55*S, 0.045*S),
         new THREE.MeshStandardMaterial({ color:0x1a3a1a, metalness:0.1, roughness:0.85 })
     ));
-
    
     const chipMat = new THREE.MeshStandardMaterial({ color:0x111820, metalness:0.3, roughness:0.7 });
     for (let i=0; i<4; i++) {
@@ -372,7 +346,6 @@ function crearRAM(ramTipo) {
         chip.position.set(0, (-0.52 + i*0.02)*S, 0.036*S);
         g.add(chip);
     }
-
   
     const hsMat = new THREE.MeshStandardMaterial({
         color: esDDR5 ? 0x18183a : 0x2a1818,
@@ -380,35 +353,29 @@ function crearRAM(ramTipo) {
     });
     const hs = new THREE.Mesh(new THREE.BoxGeometry(0.178*S, 1.15*S, 0.062*S), hsMat);
     hs.position.y = 0.18*S; g.add(hs);
-
   
     const aletaMat = new THREE.MeshStandardMaterial({ color:0x111111, metalness:0.9, roughness:0.2 });
     for (let i=-3; i<=3; i++) {
         const aleta = new THREE.Mesh(new THREE.BoxGeometry(0.006*S, 1.1*S, 0.008*S), aletaMat);
         aleta.position.set(i*0.02*S, 0.18*S, 0.038*S); g.add(aleta);
     }
-
   
     const bandColor = esDDR5 ? 0x3344ee : 0xcc1111;
     const band = new THREE.Mesh(new THREE.BoxGeometry(0.18*S, 0.14*S, 0.065*S),
         new THREE.MeshStandardMaterial({ color:bandColor, metalness:0.6, roughness:0.3 }));
     band.position.y = 0.64*S; g.add(band);
-
   
     const labelMat = new THREE.MeshStandardMaterial({ color: esDDR5 ? 0x5566ff : 0xee2222, roughness:1 });
     const label = new THREE.Mesh(new THREE.BoxGeometry(0.12*S, 0.06*S, 0.002*S), labelMat);
     label.position.set(0, 0.64*S, 0.04*S); g.add(label);
-
    
     const topPeak = new THREE.Mesh(new THREE.BoxGeometry(0.178*S, 0.06*S, 0.062*S),
         new THREE.MeshStandardMaterial({ color: esDDR5 ? 0x22224a : 0x3a2020, metalness:0.8 }));
     topPeak.position.y = 0.74*S; g.add(topPeak);
-
    
     const connMat = new THREE.MeshStandardMaterial({ color:0xb8860b, metalness:0.92, roughness:0.08 });
     const conn = new THREE.Mesh(new THREE.BoxGeometry(0.155*S, 0.24*S, 0.042*S), connMat);
     conn.position.y = -0.66*S; g.add(conn);
-
    
     const pinMat = new THREE.MeshStandardMaterial({ color:0xffd700, metalness:1.0, roughness:0.04 });
     for (let i=-5; i<=5; i++) {
@@ -419,7 +386,6 @@ function crearRAM(ramTipo) {
     const notch = new THREE.Mesh(new THREE.BoxGeometry(0.03*S, 0.26*S, 0.048*S),
         new THREE.MeshStandardMaterial({ color:0x1a3a1a }));
     notch.position.set(0.025*S, -0.66*S, 0); g.add(notch);
-
    
     if (esDDR5) {
         const led = new THREE.Mesh(new THREE.BoxGeometry(0.14*S, 0.01*S, 0.003*S),
@@ -458,7 +424,6 @@ function crearGPU() {
         );
         fanInner.rotation.x = Math.PI/2;
         fanInner.position.set(x, 0, 26); g.add(fanInner);
-
      
         for (let i=0; i<5; i++) {
             const angle = (i/5)*Math.PI*2;
@@ -469,7 +434,6 @@ function crearGPU() {
             aspa.position.set(x + Math.cos(angle)*14, Math.sin(angle)*14, 26);
             aspa.rotation.z = angle; g.add(aspa);
         }
-
      
         const hub = new THREE.Mesh(
             new THREE.CylinderGeometry(6, 6, 47, 12),
@@ -492,7 +456,6 @@ function crearGPU() {
         new THREE.MeshStandardMaterial({ color:0xb8860b, metalness:0.95, roughness:0.08 })
     );
     conn.position.set(-40, -55, 0); g.add(conn);
-
    
     [70, 110].forEach(x => {
         const pwr = new THREE.Mesh(
@@ -595,7 +558,6 @@ window.reiniciarPC = function() {
     actualizarTotal();
     if (window.onCompatibilidadActualizada) window.onCompatibilidadActualizada([], false);
 };
-
 
 const gui = new GUI({ title: ' Calibrador' });
 window._gui = gui;
