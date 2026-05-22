@@ -277,103 +277,57 @@ canvas { display: block; }
 <script>
 // ── Datos de cada componente ──
 const COMPONENTES = {
-    'btn-caja-corsair': {
-        tipo:'caja', glb:'case_corsair.glb', nombre:'Corsair iCUE 4000D', precio:150,
-        specs:{Formato:'ATX Mid-Tower', Material:'Acero + Vidrio', Bahias:'2x3.5 + 4x2.5', Peso:'7.8 kg', Precio:'150 EUR'}
-    },
-    'btn-caja-fractal': {
-        tipo:'caja', glb:'case_fractal.glb', nombre:'Fractal Design North', precio:180,
-        specs:{Formato:'ATX Mid-Tower', Material:'Acero + Madera', Bahias:'2x3.5 + 3x2.5', Peso:'8.2 kg', Precio:'180 EUR'}
-    },
-    'btn-placa-x570': {
-        tipo:'placa', glb:'mobo_pro.glb', nombre:'ASUS Pro WS X570', precio:350,
-        specs:{Socket:'AM4', Chipset:'X570', RAM:'DDR4 / 128GB', PCIe:'3x PCIe 4.0', Precio:'350 EUR'}
-    },
-    'btn-placa-b550': {
-        tipo:'placa', glb:'mobo_generic.glb', nombre:'Generica B550M', precio:120,
-        specs:{Socket:'AM4', Chipset:'B550', RAM:'DDR4 / 64GB', PCIe:'1x PCIe 4.0', Precio:'120 EUR'}
-    },
-    'btn-placa-z790': {
-        tipo:'placa', glb:'mobo_z790.glb', nombre:'MSI MAG Z790', precio:420,
-        specs:{Socket:'LGA1700', Chipset:'Z790', RAM:'DDR5 / 192GB', PCIe:'2x PCIe 5.0', Precio:'420 EUR'}
-    },
-    'btn-placa-b660': {
-        tipo:'placa', glb:'mobo_b660.glb', nombre:'ASUS B660M Plus', precio:200,
-        specs:{Socket:'LGA1700', Chipset:'B660', RAM:'DDR4 / 128GB', PCIe:'1x PCIe 5.0', Precio:'200 EUR'}
-    },
-    'btn-cpu-5900x': {
-        tipo:'cpu', glb:'cpu_5900x.glb', nombre:'Ryzen 9 5900X', precio:550,
-        specs:{Socket:'AM4', Nucleos:'12C / 24T', Base:'3.7 GHz', Boost:'4.8 GHz', TDP:'105W', Precio:'550 EUR'}
-    },
-    'btn-cpu-5600x': {
-        tipo:'cpu', glb:'cpu_5600x.glb', nombre:'Ryzen 5 5600X', precio:220,
-        specs:{Socket:'AM4', Nucleos:'6C / 12T', Base:'3.7 GHz', Boost:'4.6 GHz', TDP:'65W', Precio:'220 EUR'}
-    },
-    'btn-cpu-i9': {
-        tipo:'cpu', glb:'cpu_i9.glb', nombre:'Core i9-13900K', precio:650,
-        specs:{Socket:'LGA1700', Nucleos:'24C / 32T', Base:'3.0 GHz', Boost:'5.8 GHz', TDP:'125W', Precio:'650 EUR'}
-    },
-    'btn-cpu-i5': {
-        tipo:'cpu', glb:'cpu_i5.glb', nombre:'Core i5-13600K', precio:320,
-        specs:{Socket:'LGA1700', Nucleos:'14C / 20T', Base:'3.5 GHz', Boost:'5.1 GHz', TDP:'125W', Precio:'320 EUR'}
-    },
-    'btn-ram-ddr4': {
-        tipo:'ram', glb:'ram_ddr4.glb', nombre:'Kingston 32GB DDR4', precio:90,
-        specs:{Tipo:'DDR4', Capacidad:'32 GB (2x16)', Velocidad:'3200 MHz', CAS:'CL16', Precio:'90 EUR'}
-    },
-    'btn-ram-ddr5': {
-        tipo:'ram', glb:'ram_ddr5.glb', nombre:'Corsair 32GB DDR5', precio:160,
-        specs:{Tipo:'DDR5', Capacidad:'32 GB (2x16)', Velocidad:'6000 MHz', CAS:'CL36', Precio:'160 EUR'}
-    },
-    'btn-gpu-4090': {
-        tipo:'grafica', glb:'gpu_4090.glb', nombre:'NVIDIA RTX 4090', precio:2000,
-        specs:{VRAM:'24 GB GDDR6X', CUDA:'16 384', TDP:'450W', Rendimiento:'Extremo', Precio:'2000 EUR'}
-    },
-    'btn-gpu-3090': {
-        tipo:'grafica', glb:'gpu_3090.glb', nombre:'NVIDIA RTX 3090', precio:1200,
-        specs:{VRAM:'24 GB GDDR6X', CUDA:'10 496', TDP:'350W', Rendimiento:'Alto', Precio:'1200 EUR'}
-    }
+    'btn-caja-corsair': { tipo:'caja',    glb:'case_corsair.glb', nombre:'Corsair iCUE 4000D',  precio:150,  specs:{Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahias:'2x3.5 + 4x2.5',Peso:'7.8 kg',Precio:'150 EUR'} },
+    'btn-caja-fractal': { tipo:'caja',    glb:'case_fractal.glb', nombre:'Fractal Design North', precio:180,  specs:{Formato:'ATX Mid-Tower',Material:'Acero + Madera',Bahias:'2x3.5 + 3x2.5',Peso:'8.2 kg',Precio:'180 EUR'} },
+    'btn-placa-x570':   { tipo:'placa',   glb:'mobo_pro.glb',     nombre:'ASUS Pro WS X570',     precio:350,  specs:{Socket:'AM4',Chipset:'X570',RAM:'DDR4 / 128GB',PCIe:'3x PCIe 4.0',Precio:'350 EUR'} },
+    'btn-placa-b550':   { tipo:'placa',   glb:'mobo_generic.glb', nombre:'Generica B550M',        precio:120,  specs:{Socket:'AM4',Chipset:'B550',RAM:'DDR4 / 64GB',PCIe:'1x PCIe 4.0',Precio:'120 EUR'} },
+    'btn-placa-z790':   { tipo:'placa',   glb:'mobo_z790.glb',    nombre:'MSI MAG Z790',          precio:420,  specs:{Socket:'LGA1700',Chipset:'Z790',RAM:'DDR5 / 192GB',PCIe:'2x PCIe 5.0',Precio:'420 EUR'} },
+    'btn-placa-b660':   { tipo:'placa',   glb:'mobo_b660.glb',    nombre:'ASUS B660M Plus',       precio:200,  specs:{Socket:'LGA1700',Chipset:'B660',RAM:'DDR4 / 128GB',PCIe:'1x PCIe 5.0',Precio:'200 EUR'} },
+    'btn-cpu-5900x':    { tipo:'cpu',     glb:'cpu_5900x.glb',    nombre:'Ryzen 9 5900X',         precio:550,  specs:{Socket:'AM4',Nucleos:'12C / 24T',Base:'3.7 GHz',Boost:'4.8 GHz',TDP:'105W',Precio:'550 EUR'} },
+    'btn-cpu-5600x':    { tipo:'cpu',     glb:'cpu_5600x.glb',    nombre:'Ryzen 5 5600X',         precio:220,  specs:{Socket:'AM4',Nucleos:'6C / 12T',Base:'3.7 GHz',Boost:'4.6 GHz',TDP:'65W',Precio:'220 EUR'} },
+    'btn-cpu-i9':       { tipo:'cpu',     glb:'cpu_i9.glb',       nombre:'Core i9-13900K',        precio:650,  specs:{Socket:'LGA1700',Nucleos:'24C / 32T',Base:'3.0 GHz',Boost:'5.8 GHz',TDP:'125W',Precio:'650 EUR'} },
+    'btn-cpu-i5':       { tipo:'cpu',     glb:'cpu_i5.glb',       nombre:'Core i5-13600K',        precio:320,  specs:{Socket:'LGA1700',Nucleos:'14C / 20T',Base:'3.5 GHz',Boost:'5.1 GHz',TDP:'125W',Precio:'320 EUR'} },
+    'btn-ram-ddr4':     { tipo:'ram',     glb:'ram_ddr4.glb',     nombre:'Kingston 32GB DDR4',    precio:90,   specs:{Tipo:'DDR4',Capacidad:'32 GB (2x16)',Velocidad:'3200 MHz',CAS:'CL16',Precio:'90 EUR'} },
+    'btn-ram-ddr5':     { tipo:'ram',     glb:'ram_ddr5.glb',     nombre:'Corsair 32GB DDR5',     precio:160,  specs:{Tipo:'DDR5',Capacidad:'32 GB (2x16)',Velocidad:'6000 MHz',CAS:'CL36',Precio:'160 EUR'} },
+    'btn-gpu-4090':     { tipo:'grafica', glb:'gpu_4090.glb',     nombre:'NVIDIA RTX 4090',       precio:2000, specs:{VRAM:'24 GB GDDR6X',CUDA:'16 384',TDP:'450W',Rendimiento:'Extremo',Precio:'2000 EUR'} },
+    'btn-gpu-3090':     { tipo:'grafica', glb:'gpu_3090.glb',     nombre:'NVIDIA RTX 3090',       precio:1200, specs:{VRAM:'24 GB GDDR6X',CUDA:'10 496',TDP:'350W',Rendimiento:'Alto',Precio:'1200 EUR'} },
 };
 
 function mostrarSpecs(tipo, nombre, specs) {
     document.getElementById('specs-tipo').textContent   = tipo.toUpperCase();
     document.getElementById('specs-nombre').textContent = nombre;
-    document.getElementById('specs-body').innerHTML = Object.entries(specs).map(([k, v]) =>
-        `<div class="spec-row">
-            <span class="spec-key">${k}</span>
-            <span class="spec-val ${k==='Precio' ? 'cyan' : ''}">${v}</span>
-        </div>`
+    document.getElementById('specs-body').innerHTML = Object.entries(specs).map(([k,v]) =>
+        `<div class="spec-row"><span class="spec-key">${k}</span><span class="spec-val ${k==='Precio'?'cyan':''}">${v}</span></div>`
     ).join('');
     document.getElementById('panel-specs').classList.add('visible');
 }
 
-// Registrar evento click en todos los botones de componentes
+function marcarActivo(tipo, id) {
+    document.querySelectorAll('.comp-btn').forEach(b => {
+        const d = COMPONENTES[b.id];
+        if (d && d.tipo === tipo) b.classList.remove('activo');
+    });
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.add('activo');
+}
+
+// Registrar clicks en todos los botones de componentes
 document.querySelectorAll('.comp-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const data = COMPONENTES[this.id];
         if (!data) return;
-
-        // Marcar activo
-        document.querySelectorAll(`.comp-btn`).forEach(b => {
-            const d = COMPONENTES[b.id];
-            if (d && d.tipo === data.tipo) b.classList.remove('activo');
-        });
-        this.classList.add('activo');
-
-        // Llamar a la función del módulo 3D
-        if (window.cambiarComponente) {
-            window.cambiarComponente(data.tipo, data.glb, data.nombre, data.precio);
-        }
-
-        // Mostrar specs
+        marcarActivo(data.tipo, this.id);
+        if (window.cambiarComponente) window.cambiarComponente(data.tipo, data.glb, data.nombre, data.precio);
         mostrarSpecs(data.tipo, data.nombre, data.specs);
     });
 });
 
+// Reset: limpia escena + UI
 document.getElementById('btn-reset-pc').addEventListener('click', function() {
     if (window.reiniciarPC) window.reiniciarPC();
     document.querySelectorAll('.comp-btn').forEach(b => b.classList.remove('activo'));
     document.getElementById('panel-specs').classList.remove('visible');
+    document.getElementById('panel-compat').classList.remove('visible');
 });
 
 // Callback de compatibilidad
@@ -381,22 +335,20 @@ window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
     const panel = document.getElementById('panel-compat');
     const msgs  = document.getElementById('compat-msgs');
     const icon  = document.getElementById('compat-icon');
-
     panel.classList.remove('compat-ok','compat-err','compat-neu');
-
     if (errores.length > 0) {
-        panel.classList.add('compat-err', 'visible');
+        panel.classList.add('compat-err','visible');
         icon.textContent = '❌';
         msgs.innerHTML = errores.map(e => `<div class="err-line">${e}</div>`).join('');
     } else if (todoSeleccionado) {
-        panel.classList.add('compat-ok', 'visible');
+        panel.classList.add('compat-ok','visible');
         icon.textContent = '✅';
         msgs.innerHTML   = '<div class="ok-line">Build 100% compatible</div>';
         setTimeout(() => panel.classList.remove('visible'), 3000);
     } else {
         const haySeleccion = document.querySelector('.comp-btn.activo');
         if (haySeleccion) {
-            panel.classList.add('compat-neu', 'visible');
+            panel.classList.add('compat-neu','visible');
             icon.textContent = '⚠️';
             msgs.innerHTML   = '<div class="neu-line">Selecciona placa, CPU y RAM para verificar</div>';
         } else {
@@ -405,16 +357,18 @@ window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
     }
 };
 
-// Cargar selección inicial al arrancar
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        document.getElementById('btn-caja-corsair').click();
-        document.getElementById('btn-placa-x570').click();
-        document.getElementById('btn-cpu-5900x').click();
-        document.getElementById('btn-ram-ddr4').click();
-        document.getElementById('btn-gpu-4090').click();
-    }, 300);
-});
+// Carga inicial: espera a que app.js esté listo, luego simula click en cada componente por defecto
+// UNA SOLA VEZ — evita la doble carga
+function cargarInicial() {
+    ['btn-caja-corsair','btn-placa-x570','btn-cpu-5900x','btn-ram-ddr4','btn-gpu-4090']
+        .forEach(id => document.getElementById(id)?.click());
+}
+
+if (window._appListo) {
+    cargarInicial();
+} else {
+    window.addEventListener('appListo', cargarInicial, { once: true });
+}
 </script>
 </body>
 </html>
