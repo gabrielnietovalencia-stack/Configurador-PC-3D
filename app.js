@@ -42,43 +42,128 @@ const transformControl = new TransformControls(camera, renderer.domElement);
 transformControl.addEventListener('dragging-changed', e => { controls.enabled = !e.value; });
 scene.add(transformControl);
 
-// ── CONFIGURACIÓN MANUAL POR MODELO ──
-// Mismas coords para Fractal que Corsair, misma placa para todas, misma GPU para ambas
+// ── CONFIGURACIÓN MANUAL POR MODELO (¡ACTUALIZADO!) ──
+
+// Caja Corsair / Fractal
 const CFG_CAJA_CORSAIR = {
     escala: 4.38335949743193,
-    pos: { x: -0.0012212289042001223, y: -0.46223731273980867, z: 0.004363321447276913 },
-    rot: { x: 0, y: 0, z: 0 }
-};
-const CFG_PLACA = {
-    escala: 0.23441940463062447,
-    pos: { x: 0.44508416116312954, y: 1.2066575437401268, z: -0.6695229579883121 },
-    rot: { x: 1.5739146500977332, y: 0.018214774560915116, z: 1.694773775031612 }
-};
-const CFG_GPU = {
-    escala: 0.002822309152042788,
-    pos: { x: 0.24930784974290898, y: 0.8782206284370628, z: -0.6530687989599044 },
-    rot: { x: 3.0178850846808407, y: -1.5492430132602115, z: -1.7126768605325078 }
+    pos: {
+        x: -0.0012212289042001223,
+        y: -0.46223731273980867,
+        z: 0.004363321447276913
+    },
+    rot: {
+        x: 0,
+        y: 0,
+        z: 0
+    }
 };
 
+// ASUS Pro WS X570 (también usada por B550M, Z790 y B660)
+const CFG_PLACA = {
+    escala: 0.23441940463062447,
+    pos: {
+        x: 0.44508416116312954,
+        y: 1.2066575437401268,
+        z: -0.6695229579883121
+    },
+    rot: {
+        x: 1.5739146500977332,
+        y: 0.018214774560915116,
+        z: 1.694773775031612
+    }
+};
+
+// GPU
+const CFG_GPU = {
+    escala: 0.002822309152042788,
+    pos: {
+        x: 0.24930784974290898,
+        y: 0.8782206284370628,
+        z: -0.6530687989599044
+    },
+    rot: {
+        x: 3.0178850846808407,
+        y: -1.5492430132602115,
+        z: -1.7126768605325078
+    }
+};
+
+// CPU (i9-13900K)
+const CFG_CPU = {
+    escala: 0.2,
+    pos: {
+        x: 0.39,
+        y: 1.386,
+        z: -0.631
+    },
+    rot: {
+        x: 0,
+        y: -0.1,
+        z: 1.59
+    }
+};
+
+// RAM DDR4 / DDR5
+const CFG_RAM = {
+    escala: 0.28,
+    pos: {
+        x: 0.35,
+        y: 1.3,
+        z: -0.354
+    },
+    rot: {
+        x: 0,
+        y: 0,
+        z: 0
+    }
+};
+
+// ── CONFIGURACIÓN DE MODELOS ──
 const CONFIG_MODELOS = {
+    // CAJAS
     'case_corsair.glb': CFG_CAJA_CORSAIR,
-    'case_fractal.glb': CFG_CAJA_CORSAIR,   // mismas coords
+    'case_fractal.glb': CFG_CAJA_CORSAIR,
+
+    // PLACAS BASE
     'mobo_pro.glb':     CFG_PLACA,
     'mobo_generic.glb': CFG_PLACA,
     'mobo_z790.glb':    CFG_PLACA,
     'mobo_b660.glb':    CFG_PLACA,
-    'gpu_4090.glb':     CFG_GPU,
-    'gpu_3090.glb':     CFG_GPU,             // mismas coords
+
+    // GPUs
+    'gpu_4090.glb': CFG_GPU,
+    'gpu_3090.glb': CFG_GPU,
+
+    // CPUs
+    'cpu_i9.glb':    CFG_CPU,
+    'cpu_i5.glb':    CFG_CPU,
+    'cpu_5900x.glb': CFG_CPU,
+    'cpu_5600x.glb': CFG_CPU,
+
+    // RAM
+    'ram_ddr4.glb': CFG_RAM,
+    'ram_ddr5.glb': CFG_RAM,
 };
 
-// Defaults para placeholders (CPU y RAM — aquí están mal, calibra con el panel)
+// ── CONFIGURACIÓN POR DEFECTO ──
 const CONFIG_POR_DEFECTO = {
-    cpu:  { escala: 1, pos: { x: 0, y: 0, z: 0 }, rot: { x: 0, y: 0, z: 0 } },
-    ram:  { escala: 1, pos: { x: 0, y: 0, z: 0 }, rot: { x: 0, y: 0, z: 0 } },
+    cpu: CFG_CPU,
+    ram: CFG_RAM,
+    placa: CFG_PLACA
 };
 
+// ── APLICAR CONFIG ──
 function aplicarConfig(model, nombreArchivo, tipo) {
-    const cfg = CONFIG_MODELOS[nombreArchivo] || CONFIG_POR_DEFECTO[tipo] || { escala:1, pos:{x:0,y:0,z:0}, rot:{x:0,y:0,z:0} };
+    const cfg =
+        CONFIG_MODELOS[nombreArchivo] ||
+        CONFIG_POR_DEFECTO[tipo] ||
+        {
+            escala: 1,
+            pos: { x: 0, y: 0, z: 0 },
+            rot: { x: 0, y: 0, z: 0 }
+        };
+
     model.scale.setScalar(cfg.escala);
     model.position.set(cfg.pos.x, cfg.pos.y, cfg.pos.z);
     model.rotation.set(cfg.rot.x, cfg.rot.y, cfg.rot.z);
@@ -86,12 +171,12 @@ function aplicarConfig(model, nombreArchivo, tipo) {
 
 // ── COMPATIBILIDAD ──
 const COMPAT_DB = {
-    'mobo_pro.glb':     { socket:'AM4',     ramTipo:'DDR4' },
-    'mobo_generic.glb': { socket:'AM4',     ramTipo:'DDR4' },
+    'mobo_pro.glb':     { socket:'AM4',      ramTipo:'DDR4' },
+    'mobo_generic.glb': { socket:'AM4',      ramTipo:'DDR4' },
     'mobo_z790.glb':    { socket:'LGA1700', ramTipo:'DDR5' },
     'mobo_b660.glb':    { socket:'LGA1700', ramTipo:'DDR4' },
-    'cpu_5900x.glb':    { socket:'AM4',     marca:'amd' },
-    'cpu_5600x.glb':    { socket:'AM4',     marca:'amd' },
+    'cpu_5900x.glb':    { socket:'AM4',      marca:'amd' },
+    'cpu_5600x.glb':    { socket:'AM4',      marca:'amd' },
     'cpu_i9.glb':       { socket:'LGA1700', marca:'intel' },
     'cpu_i5.glb':       { socket:'LGA1700', marca:'intel' },
     'ram_ddr4.glb':     { ramTipo:'DDR4' },
@@ -116,45 +201,38 @@ function crearPlacaBase(chipset) {
     const esPremium = chipset === 'X570' || chipset === 'Z790';
     const pcbColor = 0x1a2a1a;
 
-    // PCB base
     g.add(new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.03, 1.7),
         new THREE.MeshStandardMaterial({ color: pcbColor, metalness:0.1, roughness:0.9 })));
 
-    // Socket CPU (cuadrado grande)
     const socket = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.04, 0.55),
         new THREE.MeshStandardMaterial({ color:0x0a0a0a, metalness:0.8, roughness:0.3 }));
     socket.position.set(-0.35, 0.035, -0.3); g.add(socket);
-    // Marco del socket
+    
     const socketMarco = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.02, 0.62),
         new THREE.MeshStandardMaterial({ color:0x2a2a2a, metalness:0.9, roughness:0.2 }));
     socketMarco.position.set(-0.35, 0.025, -0.3); g.add(socketMarco);
 
-    // VRM (módulos de regulación de voltaje alrededor del socket)
     const vrmMat = new THREE.MeshStandardMaterial({ color: esPremium ? 0x1a1a3a : 0x1a1a1a, metalness:0.7, roughness:0.4 });
     const vrmGeo = new THREE.BoxGeometry(0.12, 0.055, 0.12);
     [[-0.65,-0.3],[-0.5,-0.3],[-0.35,-0.3],[-0.65,-0.15],[-0.65,0.0],[-0.65,0.15]].forEach(([x,z]) => {
         const v = new THREE.Mesh(vrmGeo, vrmMat); v.position.set(x, 0.042, z); g.add(v);
     });
 
-    // Condensadores cerca del socket
     const capMat = new THREE.MeshStandardMaterial({ color:0x111120, metalness:0.5, roughness:0.5 });
     const capGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.06, 8);
     [[-0.1,-0.1],[-0.1,0.05],[0.05,-0.1],[0.05,0.05],[-0.1,0.2]].forEach(([x,z]) => {
         const c = new THREE.Mesh(capGeo, capMat); c.position.set(x, 0.045, z); g.add(c);
     });
 
-    // Slots RAM (4 ranuras verticales)
     const ramSlotMat = new THREE.MeshStandardMaterial({ color:0x0a0f0a, metalness:0.4, roughness:0.6 });
     [0.55, 0.68, 0.81, 0.94].forEach(x => {
         const slot = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 1.0), ramSlotMat);
         slot.position.set(x, 0.04, -0.2); g.add(slot);
-        // Pestañas del slot
         const tab = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.04, 0.06),
             new THREE.MeshStandardMaterial({ color:0x2a2a2a }));
         tab.position.set(x, 0.04, 0.32); g.add(tab);
     });
 
-    // Ranuras PCIe
     const pcieMat = new THREE.MeshStandardMaterial({ color:0x0a0a12, metalness:0.5, roughness:0.5 });
     [0.1, 0.4, 0.55].forEach((z, i) => {
         const w = i === 0 ? 1.5 : (i === 1 ? 0.9 : 1.5);
@@ -165,24 +243,20 @@ function crearPlacaBase(chipset) {
         rim.position.set(0.1, 0.038, z); g.add(rim);
     });
 
-    // Chipset (cuadradito central)
     const chipset3D = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.035, 0.22),
         new THREE.MeshStandardMaterial({ color:0x111118, metalness:0.8, roughness:0.3 }));
     chipset3D.position.set(0.3, 0.032, 0.1); g.add(chipset3D);
 
-    // Conectores SATA (lado derecho)
     const sataMat = new THREE.MeshStandardMaterial({ color:0x222222, metalness:0.6, roughness:0.5 });
     for (let i=0; i<4; i++) {
         const sata = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.06, 0.1), sataMat);
         sata.position.set(0.78, 0.045, 0.1 + i*0.12); g.add(sata);
     }
 
-    // Panel I/O trasero (izquierda)
     const io = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.15, 0.6),
         new THREE.MeshStandardMaterial({ color:0x1a1a1a, metalness:0.5, roughness:0.7 }));
     io.position.set(-0.85, 0.085, -0.55); g.add(io);
 
-    // Color premium: tira de LED simulada
     if (esPremium) {
         const led = new THREE.Mesh(new THREE.BoxGeometry(1.65, 0.005, 0.04),
             new THREE.MeshStandardMaterial({ color:0x0088ff, emissive:0x0044aa, emissiveIntensity:0.8 }));
@@ -369,7 +443,6 @@ const folders = {};
         const m = CONTENEDORES[t].children[0]; if (m) m.rotation.z = v;
     });
 
-    // Botón para imprimir las coordenadas en consola
     const acciones = {
         ['📋 Copiar '+t.toUpperCase()]: function() {
             const m = CONTENEDORES[t].children[0];
