@@ -44,54 +44,86 @@ scene.add(transformControl);
 
 // ── CONFIGURACIÓN MANUAL POR MODELO ──
 
-// Caja Corsair
-const CFG_CAJA_CORSAIR = {
+// Caja Base (Corsair) - Usada también como base para la NZXT hasta calibración
+const CFG_CAJA_BASE = {
     escala: 4.38335949743193,
-    pos: { x: -0.0012212289042001223, y: -0.46223731273980867, z: 0.004363321447276913 },
-    rot: { x: 0, y: 0, z: 0 }
+    pos: {
+        x: -0.0012212289042001223,
+        y: -0.46223731273980867,
+        z: 0.004363321447276913
+    },
+    rot: {
+        x: 0,
+        y: 0,
+        z: 0
+    }
 };
 
-// Caja Fractal Design North (Separada para poder calibrarla de forma independiente)
-const CFG_CAJA_FRACTAL = {
-    escala: 4.38335949743193, 
-    pos: { x: -0.0012212289042001223, y: -0.46223731273980867, z: 0.004363321447276913 },
-    rot: { x: 0, y: 0, z: 0 }
-};
-
-// Placas Base
+// ASUS Pro WS X570 (también usada por B550M, Z790 y B660)
 const CFG_PLACA = {
     escala: 0.23441940463062447,
-    pos: { x: 0.44508416116312954, y: 1.2066575437401268, z: -0.6695229579883121 },
-    rot: { x: 1.5739146500977332, y: 0.018214774560915116, z: 1.694773775031612 }
+    pos: {
+        x: 0.44508416116312954,
+        y: 1.2066575437401268,
+        z: -0.6695229579883121
+    },
+    rot: {
+        x: 1.5739146500977332,
+        y: 0.018214774560915116,
+        z: 1.694773775031612
+    }
 };
 
 // GPU
 const CFG_GPU = {
     escala: 0.002822309152042788,
-    pos: { x: 0.24930784974290898, y: 0.8782206284370628, z: -0.6530687989599044 },
-    rot: { x: 3.0178850846808407, y: -1.5492430132602115, z: -1.7126768605325078 }
+    pos: {
+        x: 0.24930784974290898,
+        y: 0.8782206284370628,
+        z: -0.6530687989599044
+    },
+    rot: {
+        x: 3.0178850846808407,
+        y: -1.5492430132602115,
+        z: -1.7126768605325078
+    }
 };
 
-// CPU
+// CPU (i9-13900K)
 const CFG_CPU = {
     escala: 0.2,
-    pos: { x: 0.39, y: 1.386, z: -0.631 },
-    rot: { x: 0, y: -0.1, z: 1.59 }
+    pos: {
+        x: 0.39,
+        y: 1.386,
+        z: -0.631
+    },
+    rot: {
+        x: 0,
+        y: -0.1,
+        z: 1.59
+    }
 };
 
-// RAM
+// RAM DDR4 / DDR5
 const CFG_RAM = {
     escala: 0.28,
-    pos: { x: 0.35, y: 1.3, z: -0.354 },
-    rot: { x: 0, y: 0, z: 0 }
+    pos: {
+        x: 0.35,
+        y: 1.3,
+        z: -0.354
+    },
+    rot: {
+        x: 0,
+        y: 0,
+        z: 0
+    }
 };
 
 // ── CONFIGURACIÓN DE MODELOS ──
 const CONFIG_MODELOS = {
-    // CAJAS
-    'case_corsair.glb':       CFG_CAJA_CORSAIR,
-    'case_fractal.glb':       CFG_CAJA_FRACTAL,
-    'case_fractal_north.glb': CFG_CAJA_FRACTAL, // Clon por si acaso se llama así en tu HTML
+    // CAJAS (Actualizado)
+    'case_corsair.glb': CFG_CAJA_BASE,
+    'case_nzxt.glb':    CFG_CAJA_BASE, // ¡Añadida NZXT! (Usa CFG base hasta calibrar)
 
     // PLACAS BASE
     'mobo_pro.glb':     CFG_PLACA,
@@ -116,7 +148,7 @@ const CONFIG_MODELOS = {
 
 // ── CONFIGURACIÓN POR DEFECTO ──
 const CONFIG_POR_DEFECTO = {
-    caja:  CFG_CAJA_CORSAIR,
+    caja:  CFG_CAJA_BASE,
     cpu:   CFG_CPU,
     ram:   CFG_RAM,
     placa: CFG_PLACA
@@ -373,7 +405,7 @@ window.reiniciarPC = function() {
 };
 
 // ── GUI DE CALIBRACIÓN (Cajas, CPU y RAM ahora disponibles) ──
-const gui = new GUI({ title: '📐 Calibrador — Copia los valores' });
+const gui = new GUI({ title: ' Calibrador — Copia los valores' });
 window._gui = gui;
 
 const params = {};
@@ -385,10 +417,9 @@ TIPOS.forEach(t => {
     params[t+'_RotX'] = 0; params[t+'_RotY'] = 0; params[t+'_RotZ'] = 0;
 });
 
-// Agregada 'caja' al calibrador para que puedas reubicar tu Fractal Design North si es necesario
 const folders = {};
 ['caja', 'cpu', 'ram'].forEach(t => {
-    const label = { caja: '📦 CAJA', cpu:'🔲 CPU', ram:'💾 RAM' }[t];
+    const label = { caja: ' CAJA', cpu:' CPU', ram:' RAM' }[t];
     const f = gui.addFolder(label);
     f.add(params, t+'_Scale', 0.001, 50, 0.001).name('Escala').onChange(v => {
         const m = CONTENEDORES[t].children[0]; if (m) m.scale.setScalar(v);
@@ -416,7 +447,7 @@ const folders = {};
         ['📋 Copiar '+t.toUpperCase()]: function() {
             const m = CONTENEDORES[t].children[0];
             if (!m) { console.warn('No hay modelo de '+t); return; }
-            const txt = `// ${t}\nescala: ${m.scale.x},\npos: { x: ${m.position.x}, y: ${m.position.y}, z: ${m.position.z} },\nrot: { x: ${m.rotation.x}, y: ${m.rotation.y}, z: ${m.rotation.z} }`;
+            const txt = `// ${t}\escala: ${m.scale.x},\npos: { x: ${m.position.x}, y: ${m.position.y}, z: ${m.position.z} },\nrot: { x: ${m.rotation.x}, y: ${m.rotation.y}, z: ${m.rotation.z} }`;
             console.log('=== COORDENADAS '+t.toUpperCase()+' ===\n'+txt);
             alert('Coordenadas de '+t.toUpperCase()+' copiadas en la consola (F12):\n\n'+txt);
         }
