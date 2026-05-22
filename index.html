@@ -205,7 +205,6 @@ canvas { display: block; }
         <div class="seccion">
             <div class="titulo-sec">📦 Caja</div>
             <button class="comp-btn" id="btn-caja-corsair">Corsair iCUE 4000D</button>
-            <button class="comp-btn" id="btn-caja-nzxt">NZXT H7 Flow</button>
         </div>
 
         <div class="seccion">
@@ -274,10 +273,8 @@ canvas { display: block; }
 <script type="module" src="app.js"></script>
 
 <script>
-// ── Datos de cada componente ──
 const COMPONENTES = {
     'btn-caja-corsair': { tipo:'caja',    glb:'case_corsair.glb', nombre:'Corsair iCUE 4000D',  precio:150,  specs:{Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahias:'2x3.5 + 4x2.5',Peso:'7.8 kg',Precio:'150 EUR'} },
-    'btn-caja-nzxt':    { tipo:'caja',    glb:'case_nzxt.glb',    nombre:'NZXT H7 Flow',        precio:130,  specs:{Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahias:'2x3.5 + 2x2.5',Peso:'7.5 kg',Precio:'130 EUR'} },
     'btn-placa-x570':   { tipo:'placa',   glb:'mobo_pro.glb',     nombre:'ASUS Pro WS X570',     precio:350,  specs:{Socket:'AM4',Chipset:'X570',RAM:'DDR4 / 128GB',PCIe:'3x PCIe 4.0',Precio:'350 EUR'} },
     'btn-placa-b550':   { tipo:'placa',   glb:'mobo_generic.glb', nombre:'Generica B550M',        precio:120,  specs:{Socket:'AM4',Chipset:'B550',RAM:'DDR4 / 64GB',PCIe:'1x PCIe 4.0',Precio:'120 EUR'} },
     'btn-placa-z790':   { tipo:'placa',   glb:'mobo_z790.glb',    nombre:'MSI MAG Z790',          precio:420,  specs:{Socket:'LGA1700',Chipset:'Z790',RAM:'DDR5 / 192GB',PCIe:'2x PCIe 5.0',Precio:'420 EUR'} },
@@ -310,7 +307,6 @@ function marcarActivo(tipo, id) {
     if (btn) btn.classList.add('activo');
 }
 
-// Registrar clicks en todos los botones de componentes
 document.querySelectorAll('.comp-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const data = COMPONENTES[this.id];
@@ -321,7 +317,6 @@ document.querySelectorAll('.comp-btn').forEach(btn => {
     });
 });
 
-// Reset: limpia escena + UI
 document.getElementById('btn-reset-pc').addEventListener('click', function() {
     if (window.reiniciarPC) window.reiniciarPC();
     document.querySelectorAll('.comp-btn').forEach(b => b.classList.remove('activo'));
@@ -329,7 +324,6 @@ document.getElementById('btn-reset-pc').addEventListener('click', function() {
     document.getElementById('panel-compat').classList.remove('visible');
 });
 
-// Callback de compatibilidad
 window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
     const panel = document.getElementById('panel-compat');
     const msgs  = document.getElementById('compat-msgs');
@@ -345,8 +339,7 @@ window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
         msgs.innerHTML   = '<div class="ok-line">Build 100% compatible</div>';
         setTimeout(() => panel.classList.remove('visible'), 3000);
     } else {
-        const haySeleccion = document.querySelector('.comp-btn.activo');
-        if (haySeleccion) {
+        if (document.querySelector('.comp-btn.activo')) {
             panel.classList.add('compat-neu','visible');
             icon.textContent = '⚠️';
             msgs.innerHTML   = '<div class="neu-line">Selecciona placa, CPU y RAM para verificar</div>';
@@ -356,17 +349,12 @@ window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
     }
 };
 
-// Carga inicial: espera a que app.js esté listo, luego simula click en cada componente por defecto
 function cargarInicial() {
     ['btn-caja-corsair','btn-placa-x570','btn-cpu-5900x','btn-ram-ddr4','btn-gpu-4090']
         .forEach(id => document.getElementById(id)?.click());
 }
 
-if (window._appListo) {
-    cargarInicial();
-} else {
-    window.addEventListener('appListo', cargarInicial, { once: true });
-}
+if (window._appListo) { cargarInicial(); } else { window.addEventListener('appListo', cargarInicial, { once: true }); }
 </script>
 </body>
 </html>
