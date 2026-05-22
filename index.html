@@ -7,170 +7,168 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-    --cyan:    #00ffff;
-    --cyan2:   #00c8c8;
-    --dark:    #080b12;
-    --panel:   rgba(8, 11, 20, 0.93);
-    --border:  rgba(0, 255, 255, 0.16);
-    --text:    #c8d8e8;
-    --muted:   #4a6070;
-    --red:     #ef4444;
-    --green:   #22c55e;
-    --yellow:  #eab308;
+    --cyan:   #00ffff;
+    --cyan2:  #00c8c8;
+    --dark:   #080b12;
+    --panel:  rgba(8,11,20,0.93);
+    --border: rgba(0,255,255,0.16);
+    --text:   #c8d8e8;
+    --muted:  #4a6070;
+    --red:    #ef4444;
+    --green:  #22c55e;
+    --yellow: #eab308;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { overflow: hidden; font-family: 'Rajdhani', sans-serif; background: var(--dark); cursor: crosshair; }
-canvas { display: block; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { overflow:hidden; font-family:'Rajdhani',sans-serif; background:var(--dark); cursor:crosshair; }
+canvas { display:block; }
 
 #pantalla-carga {
-    position: fixed; inset: 0; background: var(--dark);
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    z-index: 9999; transition: opacity 0.6s; gap: 20px;
+    position:fixed; inset:0; background:var(--dark);
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    z-index:9999; transition:opacity 0.6s; gap:20px;
 }
 .spinner-ring {
-    width: 60px; height: 60px;
-    border: 2px solid rgba(0,255,255,0.1); border-top: 2px solid var(--cyan);
-    border-radius: 50%; animation: spin 0.8s linear infinite;
+    width:60px; height:60px;
+    border:2px solid rgba(0,255,255,0.1); border-top:2px solid var(--cyan);
+    border-radius:50%; animation:spin 0.8s linear infinite;
 }
-@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes spin { 100%{transform:rotate(360deg);} }
 .loading-text {
-    font-family: 'Orbitron', monospace; font-size: 10px;
-    letter-spacing: 4px; color: var(--cyan); text-transform: uppercase;
-    animation: pulse 1.5s ease-in-out infinite;
+    font-family:'Orbitron',monospace; font-size:10px;
+    letter-spacing:4px; color:var(--cyan); text-transform:uppercase;
+    animation:pulse 1.5s ease-in-out infinite;
 }
 @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
 #menu {
-    position: absolute; top: 16px; left: 16px; width: 248px;
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 14px; color: var(--text); backdrop-filter: blur(20px);
-    overflow: hidden; animation: slideIn 0.5s ease both;
-    max-height: calc(100vh - 32px);
-    display: flex; flex-direction: column;
+    position:absolute; top:16px; left:16px; width:248px;
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:14px; color:var(--text); backdrop-filter:blur(20px);
+    overflow:hidden; animation:slideIn 0.5s ease both;
+    max-height:calc(100vh - 32px); display:flex; flex-direction:column;
 }
 @keyframes slideIn { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
 
 .menu-header {
-    padding: 14px 16px 12px; border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, rgba(0,255,255,0.05), transparent);
-    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+    padding:14px 16px 12px; border-bottom:1px solid var(--border);
+    background:linear-gradient(135deg,rgba(0,255,255,0.05),transparent);
+    flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
 }
 .menu-header h3 {
-    font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 900;
-    color: var(--cyan); letter-spacing: 2px; text-transform: uppercase;
+    font-family:'Orbitron',monospace; font-size:12px; font-weight:900;
+    color:var(--cyan); letter-spacing:2px; text-transform:uppercase;
 }
 .btn-back {
-    font-size: 11px; color: var(--muted); text-decoration: none;
-    letter-spacing: 1px; padding: 3px 8px;
-    border: 1px solid rgba(255,255,255,0.08); border-radius: 5px;
-    transition: all 0.15s; font-family: 'Rajdhani', sans-serif; font-weight: 600;
+    font-size:11px; color:var(--muted); text-decoration:none;
+    letter-spacing:1px; padding:3px 8px;
+    border:1px solid rgba(255,255,255,0.08); border-radius:5px;
+    transition:all 0.15s; font-family:'Rajdhani',sans-serif; font-weight:600;
 }
-.btn-back:hover { color: var(--cyan); border-color: var(--border); }
+.btn-back:hover { color:var(--cyan); border-color:var(--border); }
 
-.menu-scroll { overflow-y: auto; flex: 1; padding: 12px; }
-.menu-scroll::-webkit-scrollbar { width: 3px; }
-.menu-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.menu-scroll { overflow-y:auto; flex:1; padding:12px; }
+.menu-scroll::-webkit-scrollbar { width:3px; }
+.menu-scroll::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
-.seccion { margin-bottom: 13px; }
+.seccion { margin-bottom:13px; }
 .titulo-sec {
-    font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 3px;
-    color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+    font-family:'Orbitron',monospace; font-size:8px; letter-spacing:3px;
+    color:var(--muted); text-transform:uppercase; margin-bottom:6px;
 }
 
 .comp-btn {
-    display: block; width: 100%; padding: 7px 10px; margin-bottom: 4px;
-    background: rgba(255,255,255,0.03); color: var(--text);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 7px; cursor: pointer; transition: all 0.15s ease;
-    font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
-    text-align: left; letter-spacing: 0.3px;
-    position: relative; overflow: hidden;
+    display:block; width:100%; padding:7px 10px; margin-bottom:4px;
+    background:rgba(255,255,255,0.03); color:var(--text);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:7px; cursor:pointer; transition:all 0.15s ease;
+    font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600;
+    text-align:left; letter-spacing:0.3px; position:relative; overflow:hidden;
 }
 .comp-btn::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
-    background: var(--cyan); opacity: 0; transition: opacity 0.15s;
+    content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
+    background:var(--cyan); opacity:0; transition:opacity 0.15s;
 }
-.comp-btn:hover { background: rgba(0,255,255,0.07); border-color: rgba(0,255,255,0.3); color: var(--cyan); transform: translateX(2px); }
-.comp-btn:hover::before { opacity: 1; }
-.comp-btn.activo { background: rgba(0,255,255,0.10); border-color: rgba(0,255,255,0.5); color: var(--cyan); }
-.comp-btn.activo::before { opacity: 1; }
-.comp-btn small { color: var(--muted); font-size: 11px; }
-.comp-btn.activo small { color: var(--cyan2); }
+.comp-btn:hover { background:rgba(0,255,255,0.07); border-color:rgba(0,255,255,0.3); color:var(--cyan); transform:translateX(2px); }
+.comp-btn:hover::before { opacity:1; }
+.comp-btn.activo { background:rgba(0,255,255,0.10); border-color:rgba(0,255,255,0.5); color:var(--cyan); }
+.comp-btn.activo::before { opacity:1; }
+.comp-btn small { color:var(--muted); font-size:11px; }
+.comp-btn.activo small { color:var(--cyan2); }
 
 #resumen {
-    padding: 9px 14px; background: rgba(0,0,0,0.3);
-    border-top: 1px solid var(--border); font-size: 11px; color: var(--muted);
-    line-height: 1.9; flex-shrink: 0;
+    padding:9px 14px; background:rgba(0,0,0,0.3);
+    border-top:1px solid var(--border); font-size:11px; color:var(--muted);
+    line-height:1.9; flex-shrink:0;
 }
 #total-box {
-    padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
-    background: linear-gradient(135deg, rgba(0,255,255,0.06), rgba(0,200,200,0.02));
-    border-top: 1px solid var(--border); flex-shrink: 0;
+    padding:10px 16px; display:flex; justify-content:space-between; align-items:center;
+    background:linear-gradient(135deg,rgba(0,255,255,0.06),rgba(0,200,200,0.02));
+    border-top:1px solid var(--border); flex-shrink:0;
 }
-.total-label { font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 3px; color: var(--muted); }
-#precio-total-wrap { font-family: 'Orbitron', monospace; font-size: 17px; font-weight: 900; color: var(--cyan); }
-#precio-total-wrap span { font-size: 11px; margin-left: 1px; color: var(--cyan2); }
+.total-label { font-family:'Orbitron',monospace; font-size:8px; letter-spacing:3px; color:var(--muted); }
+#precio-total-wrap { font-family:'Orbitron',monospace; font-size:17px; font-weight:900; color:var(--cyan); }
+#precio-total-wrap span { font-size:11px; margin-left:1px; color:var(--cyan2); }
 
 .btn-reset {
-    width: 100%; padding: 9px;
-    background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.2);
-    border-radius: 0 0 14px 14px; color: #f87171;
-    font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700;
-    letter-spacing: 1px; cursor: pointer; transition: all 0.15s; text-align: center;
-    flex-shrink: 0;
+    width:100%; padding:9px;
+    background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.2);
+    border-radius:0 0 14px 14px; color:#f87171;
+    font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:700;
+    letter-spacing:1px; cursor:pointer; transition:all 0.15s; text-align:center;
+    flex-shrink:0;
 }
-.btn-reset:hover { background: rgba(239,68,68,0.16); color: white; }
+.btn-reset:hover { background:rgba(239,68,68,0.16); color:white; }
 
 #panel-compat {
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-    min-width: 260px; max-width: 500px;
-    background: var(--panel); backdrop-filter: blur(16px);
-    border-radius: 10px; overflow: hidden;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    transform: translateX(-50%) translateY(6px);
+    position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+    min-width:260px; max-width:500px;
+    background:var(--panel); backdrop-filter:blur(16px);
+    border-radius:10px; overflow:hidden;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s ease, transform 0.3s ease;
+    transform:translateX(-50%) translateY(6px);
 }
-#panel-compat.visible { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
-.compat-ok  { border: 1px solid rgba(34,197,94,0.4); }
-.compat-err { border: 1px solid rgba(239,68,68,0.4); }
-.compat-neu { border: 1px solid rgba(234,179,8,0.35); }
-.compat-inner { padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
-.compat-icon { font-size: 16px; }
-.compat-msgs { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; }
-.compat-msgs .err-line { color: var(--red); }
-.compat-msgs .ok-line  { color: var(--green); }
-.compat-msgs .neu-line { color: var(--yellow); }
+#panel-compat.visible { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
+.compat-ok  { border:1px solid rgba(34,197,94,0.4); }
+.compat-err { border:1px solid rgba(239,68,68,0.4); }
+.compat-neu { border:1px solid rgba(234,179,8,0.35); }
+.compat-inner { padding:8px 16px; display:flex; align-items:center; gap:10px; }
+.compat-icon { font-size:16px; }
+.compat-msgs { font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600; letter-spacing:0.5px; }
+.compat-msgs .err-line { color:var(--red); }
+.compat-msgs .ok-line  { color:var(--green); }
+.compat-msgs .neu-line { color:var(--yellow); }
 
 #panel-specs {
-    position: absolute; top: 16px; right: 16px; width: 210px;
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 12px; backdrop-filter: blur(16px); overflow: hidden;
-    opacity: 0; transform: translateX(8px);
-    transition: opacity 0.25s ease, transform 0.25s ease; pointer-events: none;
+    position:absolute; top:16px; right:16px; width:210px;
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:12px; backdrop-filter:blur(16px); overflow:hidden;
+    opacity:0; transform:translateX(8px);
+    transition:opacity 0.25s ease, transform 0.25s ease; pointer-events:none;
 }
-#panel-specs.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
+#panel-specs.visible { opacity:1; transform:translateX(0); pointer-events:auto; }
 .specs-header {
-    padding: 10px 14px; border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, rgba(0,255,255,0.05), transparent);
+    padding:10px 14px; border-bottom:1px solid var(--border);
+    background:linear-gradient(135deg,rgba(0,255,255,0.05),transparent);
 }
-.specs-tipo { font-family: 'Orbitron', monospace; font-size: 8px; letter-spacing: 3px; color: var(--muted); }
-.specs-nombre { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; color: var(--cyan); margin-top: 3px; line-height: 1.3; }
-.specs-body { padding: 8px 14px; }
+.specs-tipo { font-family:'Orbitron',monospace; font-size:8px; letter-spacing:3px; color:var(--muted); }
+.specs-nombre { font-family:'Orbitron',monospace; font-size:11px; font-weight:700; color:var(--cyan); margin-top:3px; line-height:1.3; }
+.specs-body { padding:8px 14px; }
 .spec-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12px;
 }
-.spec-row:last-child { border-bottom: none; }
-.spec-key { color: var(--muted); }
-.spec-val { color: var(--text); font-weight: 600; }
-.spec-val.cyan { color: var(--cyan); }
+.spec-row:last-child { border-bottom:none; }
+.spec-key { color:var(--muted); }
+.spec-val { color:var(--text); font-weight:600; }
+.spec-val.cyan { color:var(--cyan); }
 
 #instrucciones {
-    position: absolute; bottom: 12px; width: 100%; text-align: center;
-    color: var(--muted); font-size: 10px; letter-spacing: 1.5px;
-    text-transform: uppercase; pointer-events: none;
+    position:absolute; bottom:12px; width:100%; text-align:center;
+    color:var(--muted); font-size:10px; letter-spacing:1.5px;
+    text-transform:uppercase; pointer-events:none;
 }
-#instrucciones span { color: var(--cyan); }
+#instrucciones span { color:var(--cyan); }
 </style>
 <script type="importmap">
 {
@@ -201,7 +199,6 @@ canvas { display: block; }
     </div>
 
     <div class="menu-scroll">
-
         <div class="seccion">
             <div class="titulo-sec">📦 Caja</div>
             <button class="comp-btn" id="btn-caja-corsair">Corsair iCUE 4000D</button>
@@ -234,7 +231,6 @@ canvas { display: block; }
             <button class="comp-btn" id="btn-gpu-4090">RTX 4090</button>
             <button class="comp-btn" id="btn-gpu-3090">RTX 3090</button>
         </div>
-
     </div>
 
     <div id="resumen">
@@ -273,43 +269,83 @@ canvas { display: block; }
 <script type="module" src="app.js"></script>
 
 <script>
+// ── Datos de componentes (sin Fractal) ──
 const COMPONENTES = {
-    'btn-caja-corsair': { tipo:'caja',    glb:'case_corsair.glb', nombre:'Corsair iCUE 4000D',  precio:150,  specs:{Formato:'ATX Mid-Tower',Material:'Acero + Vidrio',Bahias:'2x3.5 + 4x2.5',Peso:'7.8 kg',Precio:'150 EUR'} },
-    'btn-placa-x570':   { tipo:'placa',   glb:'mobo_pro.glb',     nombre:'ASUS Pro WS X570',     precio:350,  specs:{Socket:'AM4',Chipset:'X570',RAM:'DDR4 / 128GB',PCIe:'3x PCIe 4.0',Precio:'350 EUR'} },
-    'btn-placa-b550':   { tipo:'placa',   glb:'mobo_generic.glb', nombre:'Generica B550M',        precio:120,  specs:{Socket:'AM4',Chipset:'B550',RAM:'DDR4 / 64GB',PCIe:'1x PCIe 4.0',Precio:'120 EUR'} },
-    'btn-placa-z790':   { tipo:'placa',   glb:'mobo_z790.glb',    nombre:'MSI MAG Z790',          precio:420,  specs:{Socket:'LGA1700',Chipset:'Z790',RAM:'DDR5 / 192GB',PCIe:'2x PCIe 5.0',Precio:'420 EUR'} },
-    'btn-placa-b660':   { tipo:'placa',   glb:'mobo_b660.glb',    nombre:'ASUS B660M Plus',       precio:200,  specs:{Socket:'LGA1700',Chipset:'B660',RAM:'DDR4 / 128GB',PCIe:'1x PCIe 5.0',Precio:'200 EUR'} },
-    'btn-cpu-5900x':    { tipo:'cpu',     glb:'cpu_5900x.glb',    nombre:'Ryzen 9 5900X',         precio:550,  specs:{Socket:'AM4',Nucleos:'12C / 24T',Base:'3.7 GHz',Boost:'4.8 GHz',TDP:'105W',Precio:'550 EUR'} },
-    'btn-cpu-5600x':    { tipo:'cpu',     glb:'cpu_5600x.glb',    nombre:'Ryzen 5 5600X',         precio:220,  specs:{Socket:'AM4',Nucleos:'6C / 12T',Base:'3.7 GHz',Boost:'4.6 GHz',TDP:'65W',Precio:'220 EUR'} },
-    'btn-cpu-i9':       { tipo:'cpu',     glb:'cpu_i9.glb',       nombre:'Core i9-13900K',        precio:650,  specs:{Socket:'LGA1700',Nucleos:'24C / 32T',Base:'3.0 GHz',Boost:'5.8 GHz',TDP:'125W',Precio:'650 EUR'} },
-    'btn-cpu-i5':       { tipo:'cpu',     glb:'cpu_i5.glb',       nombre:'Core i5-13600K',        precio:320,  specs:{Socket:'LGA1700',Nucleos:'14C / 20T',Base:'3.5 GHz',Boost:'5.1 GHz',TDP:'125W',Precio:'320 EUR'} },
-    'btn-ram-ddr4':     { tipo:'ram',     glb:'ram_ddr4.glb',     nombre:'Kingston 32GB DDR4',    precio:90,   specs:{Tipo:'DDR4',Capacidad:'32 GB (2x16)',Velocidad:'3200 MHz',CAS:'CL16',Precio:'90 EUR'} },
-    'btn-ram-ddr5':     { tipo:'ram',     glb:'ram_ddr5.glb',     nombre:'Corsair 32GB DDR5',     precio:160,  specs:{Tipo:'DDR5',Capacidad:'32 GB (2x16)',Velocidad:'6000 MHz',CAS:'CL36',Precio:'160 EUR'} },
-    'btn-gpu-4090':     { tipo:'grafica', glb:'gpu_4090.glb',     nombre:'NVIDIA RTX 4090',       precio:2000, specs:{VRAM:'24 GB GDDR6X',CUDA:'16 384',TDP:'450W',Rendimiento:'Extremo',Precio:'2000 EUR'} },
-    'btn-gpu-3090':     { tipo:'grafica', glb:'gpu_3090.glb',     nombre:'NVIDIA RTX 3090',       precio:1200, specs:{VRAM:'24 GB GDDR6X',CUDA:'10 496',TDP:'350W',Rendimiento:'Alto',Precio:'1200 EUR'} },
+    'btn-caja-corsair': {
+        tipo:'caja', glb:'case_corsair.glb', nombre:'Corsair iCUE 4000D', precio:150,
+        specs:{Formato:'ATX Mid-Tower', Material:'Acero + Vidrio', Bahias:'2x3.5 + 4x2.5', Peso:'7.8 kg', Precio:'150 EUR'}
+    },
+    'btn-placa-x570': {
+        tipo:'placa', glb:'mobo_pro.glb', nombre:'ASUS Pro WS X570', precio:350,
+        specs:{Socket:'AM4', Chipset:'X570', RAM:'DDR4 / 128GB', PCIe:'3x PCIe 4.0', Precio:'350 EUR'}
+    },
+    'btn-placa-b550': {
+        tipo:'placa', glb:'mobo_generic.glb', nombre:'Generica B550M', precio:120,
+        specs:{Socket:'AM4', Chipset:'B550', RAM:'DDR4 / 64GB', PCIe:'1x PCIe 4.0', Precio:'120 EUR'}
+    },
+    'btn-placa-z790': {
+        tipo:'placa', glb:'mobo_z790.glb', nombre:'MSI MAG Z790', precio:420,
+        specs:{Socket:'LGA1700', Chipset:'Z790', RAM:'DDR5 / 192GB', PCIe:'2x PCIe 5.0', Precio:'420 EUR'}
+    },
+    'btn-placa-b660': {
+        tipo:'placa', glb:'mobo_b660.glb', nombre:'ASUS B660M Plus', precio:200,
+        specs:{Socket:'LGA1700', Chipset:'B660', RAM:'DDR4 / 128GB', PCIe:'1x PCIe 5.0', Precio:'200 EUR'}
+    },
+    'btn-cpu-5900x': {
+        tipo:'cpu', glb:'cpu_5900x.glb', nombre:'Ryzen 9 5900X', precio:550,
+        specs:{Socket:'AM4', Nucleos:'12C / 24T', Base:'3.7 GHz', Boost:'4.8 GHz', TDP:'105W', Precio:'550 EUR'}
+    },
+    'btn-cpu-5600x': {
+        tipo:'cpu', glb:'cpu_5600x.glb', nombre:'Ryzen 5 5600X', precio:220,
+        specs:{Socket:'AM4', Nucleos:'6C / 12T', Base:'3.7 GHz', Boost:'4.6 GHz', TDP:'65W', Precio:'220 EUR'}
+    },
+    'btn-cpu-i9': {
+        tipo:'cpu', glb:'cpu_i9.glb', nombre:'Core i9-13900K', precio:650,
+        specs:{Socket:'LGA1700', Nucleos:'24C / 32T', Base:'3.0 GHz', Boost:'5.8 GHz', TDP:'125W', Precio:'650 EUR'}
+    },
+    'btn-cpu-i5': {
+        tipo:'cpu', glb:'cpu_i5.glb', nombre:'Core i5-13600K', precio:320,
+        specs:{Socket:'LGA1700', Nucleos:'14C / 20T', Base:'3.5 GHz', Boost:'5.1 GHz', TDP:'125W', Precio:'320 EUR'}
+    },
+    'btn-ram-ddr4': {
+        tipo:'ram', glb:'ram_ddr4.glb', nombre:'Kingston 32GB DDR4', precio:90,
+        specs:{Tipo:'DDR4', Capacidad:'32 GB (2x16)', Velocidad:'3200 MHz', CAS:'CL16', Precio:'90 EUR'}
+    },
+    'btn-ram-ddr5': {
+        tipo:'ram', glb:'ram_ddr5.glb', nombre:'Corsair 32GB DDR5', precio:160,
+        specs:{Tipo:'DDR5', Capacidad:'32 GB (2x16)', Velocidad:'6000 MHz', CAS:'CL36', Precio:'160 EUR'}
+    },
+    'btn-gpu-4090': {
+        tipo:'grafica', glb:'gpu_4090.glb', nombre:'NVIDIA RTX 4090', precio:2000,
+        specs:{VRAM:'24 GB GDDR6X', CUDA:'16 384', TDP:'450W', Rendimiento:'Extremo', Precio:'2000 EUR'}
+    },
+    'btn-gpu-3090': {
+        tipo:'grafica', glb:'gpu_3090.glb', nombre:'NVIDIA RTX 3090', precio:1200,
+        specs:{VRAM:'24 GB GDDR6X', CUDA:'10 496', TDP:'350W', Rendimiento:'Alto', Precio:'1200 EUR'}
+    }
 };
 
 function mostrarSpecs(tipo, nombre, specs) {
     document.getElementById('specs-tipo').textContent   = tipo.toUpperCase();
     document.getElementById('specs-nombre').textContent = nombre;
     document.getElementById('specs-body').innerHTML = Object.entries(specs).map(([k,v]) =>
-        `<div class="spec-row"><span class="spec-key">${k}</span><span class="spec-val ${k==='Precio'?'cyan':''}">${v}</span></div>`
+        '<div class="spec-row"><span class="spec-key">'+k+'</span><span class="spec-val '+(k==='Precio'?'cyan':'')+'">'+v+'</span></div>'
     ).join('');
     document.getElementById('panel-specs').classList.add('visible');
 }
 
-function marcarActivo(tipo, id) {
-    document.querySelectorAll('.comp-btn').forEach(b => {
-        const d = COMPONENTES[b.id];
+function marcarActivo(tipo, btnId) {
+    document.querySelectorAll('.comp-btn').forEach(function(b) {
+        var d = COMPONENTES[b.id];
         if (d && d.tipo === tipo) b.classList.remove('activo');
     });
-    const btn = document.getElementById(id);
+    var btn = document.getElementById(btnId);
     if (btn) btn.classList.add('activo');
 }
 
-document.querySelectorAll('.comp-btn').forEach(btn => {
+document.querySelectorAll('.comp-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
-        const data = COMPONENTES[this.id];
+        var data = COMPONENTES[this.id];
         if (!data) return;
         marcarActivo(data.tipo, this.id);
         if (window.cambiarComponente) window.cambiarComponente(data.tipo, data.glb, data.nombre, data.precio);
@@ -319,30 +355,31 @@ document.querySelectorAll('.comp-btn').forEach(btn => {
 
 document.getElementById('btn-reset-pc').addEventListener('click', function() {
     if (window.reiniciarPC) window.reiniciarPC();
-    document.querySelectorAll('.comp-btn').forEach(b => b.classList.remove('activo'));
+    document.querySelectorAll('.comp-btn').forEach(function(b) { b.classList.remove('activo'); });
     document.getElementById('panel-specs').classList.remove('visible');
     document.getElementById('panel-compat').classList.remove('visible');
 });
 
 window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
-    const panel = document.getElementById('panel-compat');
-    const msgs  = document.getElementById('compat-msgs');
-    const icon  = document.getElementById('compat-icon');
+    var panel = document.getElementById('panel-compat');
+    var msgs  = document.getElementById('compat-msgs');
+    var icon  = document.getElementById('compat-icon');
     panel.classList.remove('compat-ok','compat-err','compat-neu');
     if (errores.length > 0) {
         panel.classList.add('compat-err','visible');
         icon.textContent = '❌';
-        msgs.innerHTML = errores.map(e => `<div class="err-line">${e}</div>`).join('');
+        msgs.innerHTML = errores.map(function(e){ return '<div class="err-line">'+e+'</div>'; }).join('');
     } else if (todoSeleccionado) {
         panel.classList.add('compat-ok','visible');
         icon.textContent = '✅';
-        msgs.innerHTML   = '<div class="ok-line">Build 100% compatible</div>';
-        setTimeout(() => panel.classList.remove('visible'), 3000);
+        msgs.innerHTML = '<div class="ok-line">Build 100% compatible</div>';
+        setTimeout(function(){ panel.classList.remove('visible'); }, 3000);
     } else {
-        if (document.querySelector('.comp-btn.activo')) {
+        var haySeleccion = document.querySelector('.comp-btn.activo');
+        if (haySeleccion) {
             panel.classList.add('compat-neu','visible');
             icon.textContent = '⚠️';
-            msgs.innerHTML   = '<div class="neu-line">Selecciona placa, CPU y RAM para verificar</div>';
+            msgs.innerHTML = '<div class="neu-line">Selecciona placa, CPU y RAM para verificar</div>';
         } else {
             panel.classList.remove('visible');
         }
@@ -351,10 +388,14 @@ window.onCompatibilidadActualizada = function(errores, todoSeleccionado) {
 
 function cargarInicial() {
     ['btn-caja-corsair','btn-placa-x570','btn-cpu-5900x','btn-ram-ddr4','btn-gpu-4090']
-        .forEach(id => document.getElementById(id)?.click());
+        .forEach(function(id){ var btn = document.getElementById(id); if(btn) btn.click(); });
 }
 
-if (window._appListo) { cargarInicial(); } else { window.addEventListener('appListo', cargarInicial, { once: true }); }
+if (window._appListo) {
+    cargarInicial();
+} else {
+    window.addEventListener('appListo', cargarInicial, { once: true });
+}
 </script>
 </body>
 </html>
